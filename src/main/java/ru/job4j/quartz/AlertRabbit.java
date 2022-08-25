@@ -19,51 +19,53 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * Job c параметрами
  *
  * @author Alex_life
- * @version 3.0
- * добавил коннект к базе при старте. Объект коннект будет передаваться в Job.
- * @since 25.08.2022
+ * @version 4.0
+ * @since 26.08.2022
  */
 public class AlertRabbit {
 
-    private static Properties properties;
+    private static Properties properties; /* поле настроек */
 
-    public AlertRabbit(Properties properties) {
-        AlertRabbit.properties = properties;
-    }
-
-    public static Connection initConnection() throws ClassNotFoundException {
+    /**
+     * метод для подключения к БД
+     */
+    public Connection initConnection() throws ClassNotFoundException, SQLException {
         Class.forName(properties.getProperty("driver"));
-        try {
-            Connection connection = DriverManager.getConnection(
-                    properties.getProperty("url"),
-                    properties.getProperty("login"),
-                    properties.getProperty("password")
-            );
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return initConnection();
+        Connection cn = DriverManager.getConnection(
+                properties.getProperty("url"),
+                properties.getProperty("login"),
+                properties.getProperty("password")
+        );
+        return cn;
     }
 
-
-    public static void main(String[] args) {
-        Properties properties = new Properties();
+    /**
+     * метод для чтения файла с настройками
+     */
+    public void loadProp() {
         try (InputStream in = AlertRabbit.class.getClassLoader()
                 .getResourceAsStream("rabbit.properties")) {
+            properties = new Properties();
             properties.load(in);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (Connection cn = initConnection()) {
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        AlertRabbit alertRabbit = new AlertRabbit(); /* создаем объект класса */
+        alertRabbit.loadProp(); /* передаем в него настройки из метода читающий файл с настройками */
+        Connection connection = alertRabbit.initConnection(); /* подключаемся к БД при помощи отдельного метода */
+        try {
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler(); /* 1.Конфигурирование */
             /* Начало работы происходит с создания класса управляющего всеми работами.
                В объект Scheduler мы будем добавлять задачи, которые хотим выполнять периодически */
-            scheduler.start();
+            scheduler.start(); /* запускаем планировщик */
             JobDataMap data = new JobDataMap(); /* При создании Job указываем параметры data,
                                                    в которые передаем ссылку на store */
             data.put("store", store);           /* В данном примере store это ArrayList.*/
-            data.put("connection", cn);
+            data.put("connection", connection); /* добавляем в БД запись о подключении */
             JobDetail job = newJob(Rabbit.class) /* 2.Создание задачи */
                     .usingJobData(data)
                     .build();
@@ -79,7 +81,7 @@ public class AlertRabbit {
             Thread.sleep(10000); /* приостанавливаем работу на указанное время (1/1000 часть секунды) */
             scheduler.shutdown(); /* завершаем работу */
             System.out.println(store); /* выводим в консоль записи из аррэйлиста */
-        } catch (SchedulerException | InterruptedException | ClassNotFoundException | SQLException se) {
+        } catch (SchedulerException | InterruptedException se) {
             se.printStackTrace();
         }
     }
@@ -103,7 +105,7 @@ public class AlertRabbit {
             System.out.println("Rabbit runs here ...");
             Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
             try (PreparedStatement statement = connection.prepareStatement(
-                    "insert into rabbits (created_date) values (?)"
+                    "insert into rabbit (created_date) values (?)"
             )) {
                 statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
                 statement.execute();
