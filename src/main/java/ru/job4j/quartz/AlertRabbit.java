@@ -31,12 +31,11 @@ public class AlertRabbit {
      */
     public Connection initConnection() throws ClassNotFoundException, SQLException {
         Class.forName(properties.getProperty("driver"));
-        Connection cn = DriverManager.getConnection(
+        return DriverManager.getConnection(
                 properties.getProperty("url"),
                 properties.getProperty("login"),
                 properties.getProperty("password")
         );
-        return cn;
     }
 
     /**
