@@ -19,42 +19,39 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * Job c параметрами
  *
  * @author Alex_life
- * @version 4.0
+ * @version 5.0
  * @since 26.08.2022
  */
 public class AlertRabbit {
 
-    private static Properties properties; /* поле настроек */
-
-    /**
-     * метод для подключения к БД
-     */
-    public Connection initConnection() throws ClassNotFoundException, SQLException {
-        Class.forName(properties.getProperty("driver"));
+    public Connection initConnection(Properties pr)  throws ClassNotFoundException, SQLException {
+        Class.forName(pr.getProperty("driver"));
         return DriverManager.getConnection(
-                properties.getProperty("url"),
-                properties.getProperty("login"),
-                properties.getProperty("password")
+                pr.getProperty("url"),
+                pr.getProperty("login"),
+                pr.getProperty("password")
         );
     }
 
     /**
      * метод для чтения файла с настройками
      */
-    public void loadProp() {
+    public Properties loadProp() {
+        Properties prop = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader()
                 .getResourceAsStream("rabbit.properties")) {
-            properties = new Properties();
-            properties.load(in);
+            prop.load(in);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return prop;
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        AlertRabbit alertRabbit = new AlertRabbit(); /* создаем объект класса */
-        alertRabbit.loadProp(); /* передаем в него настройки из метода читающий файл с настройками */
-        Connection connection = alertRabbit.initConnection(); /* подключаемся к БД при помощи отдельного метода */
+        AlertRabbit alertRabbit = new AlertRabbit(); /* создаем объект класса,
+                                                         поскольку нельзя напрямую обратиться к нестатическим методам*/
+        Connection cn = alertRabbit.initConnection(alertRabbit.loadProp()); /* подключаемся к БД,
+                    при помощи отдельного метода в параметры которого передали метод считывающий файл с настройками */
         try {
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler(); /* 1.Конфигурирование */
@@ -64,13 +61,13 @@ public class AlertRabbit {
             JobDataMap data = new JobDataMap(); /* При создании Job указываем параметры data,
                                                    в которые передаем ссылку на store */
             data.put("store", store);           /* В данном примере store это ArrayList.*/
-            data.put("connection", connection); /* добавляем в БД запись о подключении */
+            data.put("connection", cn); /* добавляем в БД запись о подключении */
             JobDetail job = newJob(Rabbit.class) /* 2.Создание задачи */
                     .usingJobData(data)
                     .build();
             SimpleScheduleBuilder times = simpleSchedule() /* 3.Создание расписания */
                     .withIntervalInSeconds(Integer.parseInt(
-                            properties.getProperty("rabbit.interval"))) /* читаем строчку из пропертис */
+                            alertRabbit.loadProp().getProperty("rabbit.interval"))) /* читаем строчку из пропертис */
                     .repeatForever();          /* Запускаем задачу через 10 секунд и делаем это бесконечно */
             Trigger trigger = newTrigger() /* 4.Задача выполняется через триггер */
                     .startNow()            /* Здесь можно указать, когда начинать запуск. Например сразу */
