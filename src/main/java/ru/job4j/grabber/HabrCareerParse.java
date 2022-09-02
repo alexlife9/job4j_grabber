@@ -18,7 +18,7 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 4.0
+ * @version 5.0
  * поправил парсинг заданного кол-ва страниц
  * @since 02.09.2022
  */
@@ -31,15 +31,13 @@ public class HabrCareerParse {
      */
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    public static int pageValue;
-    public static int pageValueEnd;
+    public static final int PAGES = 5;
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
     public static void main(String[] args) throws IOException {
-        pageValue = 0;
-        pageValueEnd = 5;
-        for (pageValue = 1; pageValue <= pageValueEnd; pageValue++) {
+
+        for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
 
             /* получаем страницу, чтобы с ней можно было работать: */
             Connection connection = Jsoup.connect(PAGE_LINK + pageValue);
