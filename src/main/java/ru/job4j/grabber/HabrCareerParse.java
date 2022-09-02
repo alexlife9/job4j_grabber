@@ -7,13 +7,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
+
 /**
  * Парсинг HTML страницы
  *
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 02.09.2022
  */
 public class HabrCareerParse {
@@ -31,6 +36,9 @@ public class HabrCareerParse {
         /* получаем страницу, чтобы с ней можно было работать: */
         Connection connection = Jsoup.connect(PAGE_LINK);
         Document document = connection.get();
+
+        /* создаем объект даты */
+        HabrCareerDateTimeParser dateParser = new HabrCareerDateTimeParser();
 
         /* получаем все вакансии страницы: */
         Elements rows = document.select(".vacancy-card__inner");
@@ -52,9 +60,9 @@ public class HabrCareerParse {
             Ссылка находится в виде атрибута, поэтому ее значение надо получить как значение атрибута.
             Для этого служит метод attr()*/
             String vacancyName = titleElement.text();
-            String vacancyData = linkDataEl.attr("datetime");
+            LocalDateTime vacancyData = dateParser.parse(linkDataEl.attr("datetime"));
             String link = String.format("%s%s", SOURCE_LINK, linkTitleEl.attr("href"));
-            System.out.printf("%s %s %s%n", vacancyName, vacancyData, link);
+            System.out.printf("%s %s %s %n", vacancyData, vacancyName, link);
         });
     }
 }
