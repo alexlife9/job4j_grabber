@@ -7,7 +7,7 @@ import java.util.Objects;
  * Модель данных - Post
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 02.09.2022
  */
 public class Post {
@@ -18,7 +18,7 @@ public class Post {
      *  - description типа String - описание вакансии;
      *  - created типа LocalDateTime - дата создания вакансии.
      */
-    private final int id;
+    private int id;
     private final String title;
     private final String link;
     private final String description;
@@ -30,6 +30,37 @@ public class Post {
         this.link = link;
         this.description = description;
         this.created = created;
+    }
+
+    public Post(String title, String link, String description, LocalDateTime created) {
+        this.title = title;
+        this.link = link;
+        this.description = description;
+        this.created = created;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
     }
 
     @Override
