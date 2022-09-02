@@ -18,9 +18,9 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 5.0
- * поправил парсинг заданного кол-ва страниц
- * @since 02.09.2022
+ * @version 6.0
+ * добавил отображение описания вакансии
+ * @since 03.09.2022
  */
 public class HabrCareerParse {
 
@@ -31,14 +31,14 @@ public class HabrCareerParse {
      */
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    public static final int PAGES = 5;
+    public static final int PAGES = 1;
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
     public static void main(String[] args) throws IOException {
 
         for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
-
+            HabrCareerParse dcr = new HabrCareerParse();
             /* получаем страницу, чтобы с ней можно было работать: */
             Connection connection = Jsoup.connect(PAGE_LINK + pageValue);
             Document document = connection.get();
@@ -68,7 +68,11 @@ public class HabrCareerParse {
                 String vacancyName = titleElement.text();
                 LocalDateTime vacancyData = dateParser.parse(linkDataEl.attr("datetime"));
                 String link = String.format("%s%s", SOURCE_LINK, linkTitleEl.attr("href"));
-                System.out.printf("%s %s %s %n", vacancyData, vacancyName, link);
+                try {
+                    System.out.printf("%s %s %s %n", vacancyData, vacancyName, link, dcr.retrieveDescription(link));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
         }
     }
@@ -78,9 +82,11 @@ public class HabrCareerParse {
      * @param link ссылка на вакансию
      * @return описание вакансии
      */
-    private String retrieveDescription(String link) {
-
-        return null;
+    private String retrieveDescription(String link) throws IOException {
+        Connection cn = Jsoup.connect(link);
+        Document doc = cn.get();
+        Element description = doc.select(".style-ugc").first();
+        return description.text();
     }
 }
 
