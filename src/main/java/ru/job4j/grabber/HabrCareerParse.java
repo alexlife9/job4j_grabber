@@ -18,8 +18,8 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 3.0
- * добавил парсинг заданного кол-ва страниц
+ * @version 4.0
+ * поправил парсинг заданного кол-ва страниц
  * @since 02.09.2022
  */
 public class HabrCareerParse {
@@ -31,16 +31,18 @@ public class HabrCareerParse {
      */
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    private static int page;
+    public static int pageValue;
+    public static int pageValueEnd;
 
-    private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=%s", SOURCE_LINK, page);
+    private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
     public static void main(String[] args) throws IOException {
-        int pageValue = 6;
-        for (page = 1; page < pageValue; page++) {
+        pageValue = 0;
+        pageValueEnd = 5;
+        for (pageValue = 1; pageValue <= pageValueEnd; pageValue++) {
 
             /* получаем страницу, чтобы с ней можно было работать: */
-            Connection connection = Jsoup.connect(PAGE_LINK);
+            Connection connection = Jsoup.connect(PAGE_LINK + pageValue);
             Document document = connection.get();
 
             /* создаем объект даты */
@@ -71,6 +73,16 @@ public class HabrCareerParse {
                 System.out.printf("%s %s %s %n", vacancyData, vacancyName, link);
             });
         }
+    }
+
+    /**
+     * метод извлекает описание вакансии
+     * @param link ссылка на вакансию
+     * @return описание вакансии
+     */
+    private String retrieveDescription(String link) {
+
+        return null;
     }
 }
 
