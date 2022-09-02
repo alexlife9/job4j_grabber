@@ -31,14 +31,16 @@ public class HabrCareerParse {
      */
     private static final String SOURCE_LINK = "https://career.habr.com";
 
-    public static final int PAGES = 1;
+    public static final int PAGES = 5;
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
     public static void main(String[] args) throws IOException {
 
         for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
+            /* создаем объект класса для доступа к нестатическому методу */
             HabrCareerParse dcr = new HabrCareerParse();
+
             /* получаем страницу, чтобы с ней можно было работать: */
             Connection connection = Jsoup.connect(PAGE_LINK + pageValue);
             Document document = connection.get();
@@ -69,7 +71,11 @@ public class HabrCareerParse {
                 LocalDateTime vacancyData = dateParser.parse(linkDataEl.attr("datetime"));
                 String link = String.format("%s%s", SOURCE_LINK, linkTitleEl.attr("href"));
                 try {
-                    System.out.printf("%s %s %s %n", vacancyData, vacancyName, link, dcr.retrieveDescription(link));
+                    System.out.printf("%s %s %s %s %n",
+                            vacancyData,
+                            vacancyName,
+                            link,
+                            dcr.retrieveDescription(link));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
