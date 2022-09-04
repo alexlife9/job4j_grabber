@@ -39,6 +39,13 @@ public class Post {
         this.created = created;
     }
 
+    public Post(LocalDateTime created, String link, String title, String description) {
+        this.created = created;
+        this.link = link;
+        this.title = title;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }

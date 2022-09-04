@@ -7,9 +7,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
+import ru.job4j.grabber.utils.DateTimeParser;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 /**
@@ -18,81 +19,108 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 6.0
- * добавил отображение описания вакансии
- * @since 03.09.2022
+ * @version 7.0
+ * выделил логику в отдельные методы
+ * @since 04.09.2022
  */
-public class HabrCareerParse {
+public class HabrCareerParse implements Parse {
 
     /**
-     * Есть две константы.
-     * Первая это ссылка на сайт в целом.
-     * Вторая указывает непосредственно на страницу с вакансиями
+     * Глубина поиска страниц
+     * Ссылка на сайт для парсинга
+     * Ссылка непосредственно на страницу с вакансиями
+     * Парсер времени создания вакансии
      */
-    private static final String SOURCE_LINK = "https://career.habr.com";
-
     public static final int PAGES = 5;
+
+    private static final String SOURCE_LINK = "https://career.habr.com";
 
     private static final String PAGE_LINK = String.format("%s/vacancies/java_developer?page=", SOURCE_LINK);
 
+    private final DateTimeParser dateTimeParser;
+
+    public HabrCareerParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
+
     public static void main(String[] args) throws IOException {
-
-        for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
-            /* создаем объект класса для доступа к нестатическому методу */
-            HabrCareerParse dcr = new HabrCareerParse();
-
-            /* получаем страницу, чтобы с ней можно было работать: */
-            Connection connection = Jsoup.connect(PAGE_LINK + pageValue);
-            Document document = connection.get();
-
-            /* создаем объект даты */
-            HabrCareerDateTimeParser dateParser = new HabrCareerDateTimeParser();
-
-            /* получаем все вакансии страницы: */
-            Elements rows = document.select(".vacancy-card__inner");
-
-        /* Проходимся по каждой вакансии и извлекаем нужные для нас данные.
-        Сначала получаем элементы содержащие название и ссылку.
-        Стоит обратить внимание, что дочерние элементы можно получать через индекс - метод child(0)
-        или же через селектор - select(".vacancy-card__title"). */
-            rows.forEach(row -> {
-                Element titleElement = row.select(".vacancy-card__title").first();
-                Element linkTitleEl = titleElement.child(0);
-
-                /* Получаем дату и ссылку на нее */
-                Element dataElement = row.select(".vacancy-card__date").first();
-                Element linkDataEl = dataElement.child(0);
-
-            /* Наконец получаем данные непосредственно.
-            text() возвращает все содержимое элемента в виде текста, т.е. весь текст что находится вне тегов HTML.
-            Ссылка находится в виде атрибута, поэтому ее значение надо получить как значение атрибута.
-            Для этого служит метод attr()*/
-                String vacancyName = titleElement.text();
-                LocalDateTime vacancyData = dateParser.parse(linkDataEl.attr("datetime"));
-                String link = String.format("%s%s", SOURCE_LINK, linkTitleEl.attr("href"));
-                try {
-                    System.out.printf("%s %s %s %s %n",
-                            vacancyData,
-                            vacancyName,
-                            link,
-                            dcr.retrieveDescription(link));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+        Parse parserVacancy = new HabrCareerParse(new HabrCareerDateTimeParser());
+        List<Post> vacancy = parserVacancy.list(PAGE_LINK);
+        for (Post vacancies : vacancy) {
+            System.out.println(vacancies);
         }
     }
 
     /**
-     * метод извлекает описание вакансии
+     * Метод retrieveDescription извлекает описание вакансии
+     * Признак вакансии содержится в теге ".style-ugc". Это можно увидеть исследовав искомую страницу
      * @param link ссылка на вакансию
      * @return описание вакансии
      */
     private String retrieveDescription(String link) throws IOException {
-        Connection cn = Jsoup.connect(link);
-        Document doc = cn.get();
-        Element description = doc.select(".style-ugc").first();
-        return description.text();
+        Connection cn = Jsoup.connect(link); /* коннект к переданному в параметрах урлу */
+        Document doc = cn.get();             /* получаем структуру страницы */
+        Element descr = doc.selectFirst(".style-ugc"); /* ищем и сохраняем элемент страницы */
+        return descr.text(); /* сохраняем содержимое элемента страницы в виде текста */
+    }
+
+    /**
+     * Метод getPost сканирует непосредственно саму вакансию
+     * @param row - строчка отдельной вакансии
+     * @return возвращаем (в виде готового объекта) вакансию с данными: дата, линк, название, описание
+     */
+    private Post getPost(Element row) throws IOException {
+
+        /* ищем элемент вакансии по признаку вакансии в структуре страницы и извлекаем ссылку на этот элемент */
+        Element titleElement = row.selectFirst(".vacancy-card__title").child(0);
+
+        /* получаем название вакансии */
+        String nameVacancy = titleElement.text();
+
+        /* ищем элемент даты размещения вакансии и извлекаем ссылку на этот элемент */
+        Element dataElement = row.selectFirst(".vacancy-card__date").child(0);
+
+        /* Ссылки находятся в виде атрибута, поэтому их значение надо получить как значение атрибута. */
+        String linkVacancy = titleElement.attr("href");
+        String dataVacancy = dataElement.attr("datetime");
+
+        String description = retrieveDescription(linkVacancy);
+
+        return new Post(
+                dateTimeParser.parse(dataVacancy),
+                linkVacancy,
+                nameVacancy,
+                description);
+    }
+
+    /**
+     * Метод list загружает список всех вакансий
+     * @param link - полный урл вакансии без номера страницы
+     * @return - список вакансий в виде массива листа
+     */
+    @Override
+    public List<Post> list(String link) throws IOException {
+        List<Post> listVacancy = new ArrayList<>();
+        for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
+
+            /* соединяемся с указанной в параметре страницей и получаем ее структуру в документ */
+            Connection connection = Jsoup.connect(link + pageValue);
+            Document document = connection.get();
+
+            /* получаем все вакансии на текущей странице: */
+            Elements rows = document.select(".vacancy-card__inner");
+
+            /* проходим по всем полученным вакансиям и добавляем их в массив вакансий */
+            for (Element row : rows) {
+                try {
+                    listVacancy.add(getPost(row));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+            return listVacancy;
     }
 }
 
