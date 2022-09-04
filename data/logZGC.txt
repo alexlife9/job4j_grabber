@@ -1,0 +1,1 @@
+[0.011s][error][gc] Failed to lookup symbol: VirtualAlloc2

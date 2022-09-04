@@ -34,7 +34,7 @@ public class GCTest {
 
     private static void menu() {
         System.out.println();
-        System.out.println("Меню:");
+        System.out.println("Выбери сортировку или Выход:");
         System.out.println("1. Сортировка слиянием");
         System.out.println("2. Сортировка методом вставки");
         System.out.println("3. Сортировка пузырьком");
@@ -48,6 +48,7 @@ public class GCTest {
         System.out.println("Укажи размер массива на сортировку:");
         int getArray = scanner.nextInt();
         arrayValue.insert(getArray);
+        LOGLIST.add(String.valueOf(getArray));
         LocalDateTime start = LocalDateTime.now();
         while (run) {
             menu();
@@ -57,13 +58,16 @@ public class GCTest {
                 mergeSort.sort(arrayValue);
                 System.out.println("Сортировка слиянием заняла: "
                         + MILLIS.between(start, LocalDateTime.now()) + " мсек");
-
+                LOGLIST.add(("Сортировка слиянием заняла: "
+                        + MILLIS.between(start, LocalDateTime.now()) + " мсек"));
             }
             if (choice == INSERTSORT) {
                 InsertSort insertSort = new InsertSort();
                 insertSort.sort(arrayValue);
                 System.out.println("Сортировка вставкой заняла: "
                         + MILLIS.between(start, LocalDateTime.now()) + " мсек");
+                LOGLIST.add(("Сортировка вставкой заняла: "
+                        + MILLIS.between(start, LocalDateTime.now()) + " мсек"));
             }
             if (choice == BUBLESORT) {
                 BubbleSort bubbleSort = new BubbleSort();
@@ -87,7 +91,7 @@ public class GCTest {
     public static void save(List<String> log) {
         try (PrintWriter out = new PrintWriter(
                 new BufferedOutputStream(
-                        new FileOutputStream("./data/logGS.txt")
+                        new FileOutputStream("./data/timeZ_G1.txt")
                 ))) {
             out.println(log);
         } catch (IOException e) {
