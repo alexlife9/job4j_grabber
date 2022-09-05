@@ -19,9 +19,9 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 7.0
- * выделил логику в отдельные методы
- * @since 04.09.2022
+ * @version 8.0
+ * правки работоспособности, ловля ошибок
+ * @since 06.09.2022
  */
 public class HabrCareerParse implements Parse {
 
@@ -58,10 +58,14 @@ public class HabrCareerParse implements Parse {
      * @return описание вакансии
      */
     private String retrieveDescription(String link) throws IOException {
-        Connection cn = Jsoup.connect(link); /* коннект к переданному в параметрах урлу */
-        Document doc = cn.get();             /* получаем структуру страницы */
-        Element descr = doc.selectFirst(".style-ugc"); /* ищем и сохраняем элемент страницы */
-        return descr.text(); /* сохраняем содержимое элемента страницы в виде текста */
+        try {
+            Connection cn = Jsoup.connect(link); /* коннект к переданному в параметрах урлу */
+            Document doc = cn.get();             /* получаем структуру страницы */
+            Element descr = doc.selectFirst(".style-ugc"); /* ищем и сохраняем элемент страницы */
+            return descr.text(); /* сохраняем содержимое элемента страницы в виде текста */
+        } catch (IOException e) {
+            throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */
+        }
     }
 
     /**
@@ -69,28 +73,32 @@ public class HabrCareerParse implements Parse {
      * @param row - строчка отдельной вакансии
      * @return возвращаем (в виде готового объекта) вакансию с данными: дата, линк, название, описание
      */
-    private Post getPost(Element row) throws IOException {
+    private Post getPost(Element row) {
+        try {
+            /* ищем элемент вакансии по признаку вакансии в структуре страницы и извлекаем ссылку на этот элемент */
+            Element titleElement = row.selectFirst(".vacancy-card__title").child(0);
 
-        /* ищем элемент вакансии по признаку вакансии в структуре страницы и извлекаем ссылку на этот элемент */
-        Element titleElement = row.selectFirst(".vacancy-card__title").child(0);
+            /* получаем название вакансии */
+            String nameVacancy = titleElement.text();
 
-        /* получаем название вакансии */
-        String nameVacancy = titleElement.text();
+            /* ищем элемент даты размещения вакансии и извлекаем ссылку на этот элемент */
+            Element dataElement = row.selectFirst(".vacancy-card__date").child(0);
 
-        /* ищем элемент даты размещения вакансии и извлекаем ссылку на этот элемент */
-        Element dataElement = row.selectFirst(".vacancy-card__date").child(0);
+            /* Ссылки находятся в виде атрибута, поэтому их значение надо получить как значение атрибута. */
+            String linkVacancy = String.format("%s%s", SOURCE_LINK, titleElement.attr("href"));
+            String dataVacancy = dataElement.attr("datetime");
 
-        /* Ссылки находятся в виде атрибута, поэтому их значение надо получить как значение атрибута. */
-        String linkVacancy = titleElement.attr("href");
-        String dataVacancy = dataElement.attr("datetime");
+            String description = null;
+            description = retrieveDescription(linkVacancy);
 
-        String description = retrieveDescription(linkVacancy);
-
-        return new Post(
-                dateTimeParser.parse(dataVacancy),
-                linkVacancy,
-                nameVacancy,
-                description);
+            return new Post(
+                    dateTimeParser.parse(dataVacancy),
+                    linkVacancy,
+                    nameVacancy,
+                    description);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */
+        }
     }
 
     /**
@@ -99,28 +107,33 @@ public class HabrCareerParse implements Parse {
      * @return - список вакансий в виде массива листа
      */
     @Override
-    public List<Post> list(String link) throws IOException {
+    public List<Post> list(String link) {
         List<Post> listVacancy = new ArrayList<>();
-        for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
+        try {
+            for (int pageValue = 1; pageValue <= PAGES; pageValue++) {
 
-            /* соединяемся с указанной в параметре страницей и получаем ее структуру в документ */
-            Connection connection = Jsoup.connect(link + pageValue);
-            Document document = connection.get();
+                /* соединяемся с указанной в параметре страницей и получаем ее структуру в документ */
+                Connection connection = Jsoup.connect(link + pageValue);
+                Document document = null;
+                document = connection.get();
 
-            /* получаем все вакансии на текущей странице: */
-            Elements rows = document.select(".vacancy-card__inner");
+                /* получаем все вакансии на текущей странице: */
+                Elements rows = null;
+                if (document != null) {
+                    rows = document.select(".vacancy-card__inner");
+                }
 
-            /* проходим по всем полученным вакансиям и добавляем их в массив вакансий */
-            for (Element row : rows) {
-                try {
-                    listVacancy.add(getPost(row));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                /* проходим по всем полученным вакансиям и добавляем их в массив вакансий */
+                if (rows != null) {
+                    for (Element row : rows) {
+                        listVacancy.add(getPost(row));
+                    }
                 }
             }
-
+        } catch (Exception e) {
+            throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */
         }
-            return listVacancy;
+        return listVacancy;
     }
 }
 
