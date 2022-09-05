@@ -85,19 +85,19 @@ drop table users;
 --Таблица должна находиться в первой нормальной форме.
 --Любое её поле, не входящее в состав первичного ключа, функционально полно зависит от первичного ключа.
 
-create table users
-(
-    id      serial primary key,
-    name    text,
-    address text,
-    UNIQUE (name, address)
-);
-
 create table user_gender
 (
-    id       serial primary key,
-    gender   text,
-    users_id int references users (id)
+    id     serial primary key,
+    gender text
+);
+
+create table users
+(
+    id             serial primary key,
+    name           text,
+    address        text,
+    user_gender_id int references user_gender (id),
+    UNIQUE (name, address)
 );
 
 create table movie_rental
@@ -108,15 +108,16 @@ create table movie_rental
 );
 
 --добавляем записи
-insert into users(name, address)
-values ('ольга егорова', 'казанский, 14'),
-       ('иванов сергей', 'центральная, 40, кв. 95'),
-       ('иванов сергей', 'ленина, 59, кв. 37');
+insert into user_gender(gender)
+values ('женский'),
+       ('мужской')
+;
 
-insert into user_gender(gender, users_id)
-values ('женский', 1),
-       ('мужской', 2),
-       ('мужской', 3);
+insert into users(name, address, user_gender_id)
+values ('ольга егорова', 'казанский, 14', 1),
+       ('иванов сергей', 'центральная, 40, кв. 95', 2),
+       ('иванов сергей', 'ленина, 59, кв. 37', 2);
+
 
 insert into movie_rental(films, users_id)
 values ('пираты', 1),
@@ -127,9 +128,7 @@ values ('пираты', 1),
 
 --смотрим что получилось
 select *
-from users
-         join user_gender ug on users.id = ug.users_id
-         join movie_rental mr on users.id = mr.users_id
+from user_gender
+join users u on user_gender.id = u.user_gender_id
+join movie_rental mr on u.id = mr.users_id
 ;
-
---вместо дропа можно было использовать оператор update, но так нагляднее получилось
