@@ -57,7 +57,7 @@ public class HabrCareerParse implements Parse {
      * @param link ссылка на вакансию
      * @return описание вакансии
      */
-    private String retrieveDescription(String link) throws IOException {
+    private String retrieveDescription(String link) {
         try {
             Connection cn = Jsoup.connect(link);           /* коннект к переданному в параметрах урлу */
             Document doc = cn.get();                       /* получаем структуру страницы */
@@ -113,8 +113,7 @@ public class HabrCareerParse implements Parse {
 
                 /* соединяемся с указанной в параметре страницей и получаем ее структуру в документ */
                 Connection connection = Jsoup.connect(link + pageValue);
-                Document document = null;
-                document = connection.get();
+                Document document = connection.get();
 
                 /* получаем все вакансии на текущей странице: */
                 Elements rows = null;
