@@ -7,8 +7,9 @@ import java.util.Objects;
  * Модель данных - Post
  *
  * @author Alex_life
- * @version 2.0
- * @since 02.09.2022
+ * @version 3.0
+ * заменил конструктор для соответствия полям в БД
+ * @since 06.09.2022
  */
 public class Post {
     /**
@@ -37,13 +38,6 @@ public class Post {
         this.link = link;
         this.description = description;
         this.created = created;
-    }
-
-    public Post(LocalDateTime created, String link, String title, String description) {
-        this.created = created;
-        this.link = link;
-        this.title = title;
-        this.description = description;
     }
 
     public int getId() {

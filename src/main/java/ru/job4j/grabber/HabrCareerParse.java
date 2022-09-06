@@ -16,11 +16,11 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 /**
  * Парсинг HTML страницы
  *
- * По техническому заданию получаем данные с сайта - https: career.habr.com/vacancies/java_developer
+ * По техническому заданию получаем данные с сайта - https:\\career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 8.0
- * правки работоспособности, ловля ошибок
+ * @version 9.0
+ * мелкие правки, конструктор заменил
  * @since 06.09.2022
  */
 public class HabrCareerParse implements Parse {
@@ -59,8 +59,8 @@ public class HabrCareerParse implements Parse {
      */
     private String retrieveDescription(String link) throws IOException {
         try {
-            Connection cn = Jsoup.connect(link); /* коннект к переданному в параметрах урлу */
-            Document doc = cn.get();             /* получаем структуру страницы */
+            Connection cn = Jsoup.connect(link);           /* коннект к переданному в параметрах урлу */
+            Document doc = cn.get();                       /* получаем структуру страницы */
             Element descr = doc.selectFirst(".style-ugc"); /* ищем и сохраняем элемент страницы */
             return descr.text(); /* сохраняем содержимое элемента страницы в виде текста */
         } catch (IOException e) {
@@ -71,7 +71,7 @@ public class HabrCareerParse implements Parse {
     /**
      * Метод getPost сканирует непосредственно саму вакансию
      * @param row - строчка отдельной вакансии
-     * @return возвращаем (в виде готового объекта) вакансию с данными: дата, линк, название, описание
+     * @return возвращаем (в виде готового объекта) вакансию с данными: название, линк, описание, дата
      */
     private Post getPost(Element row) {
         try {
@@ -88,14 +88,13 @@ public class HabrCareerParse implements Parse {
             String linkVacancy = String.format("%s%s", SOURCE_LINK, titleElement.attr("href"));
             String dataVacancy = dataElement.attr("datetime");
 
-            String description = null;
-            description = retrieveDescription(linkVacancy);
+            String description = retrieveDescription(linkVacancy);
 
             return new Post(
-                    dateTimeParser.parse(dataVacancy),
-                    linkVacancy,
                     nameVacancy,
-                    description);
+                    linkVacancy,
+                    description,
+                    dateTimeParser.parse(dataVacancy));
         } catch (Exception e) {
             throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */
         }
