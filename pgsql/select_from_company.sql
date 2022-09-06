@@ -60,16 +60,13 @@ from company AS c
 where company_id != 5;
 
 --запрос на название компании с максимальным количеством человек + количество человек в этой компании.
-select company.name AS компания, count(person.name) AS количество_персон
-from company
-         join person on company.id = person.company_id
-group by company.name
-having count(person.name) = ( --считаем кол-во компаний и открываем подзапрос для выполнения условий
-    select max(количество)                           --выбираем и передаем в МАХ аргумент
-    from (                                           --из второго подзапроса
-             select count(person.name) AS количество --где выбираем кол-во персон
-             from company                            --из таблицы company с присоединенной таблицей person
-                      join person on company.id = person.company_id
-             group by company.name --having всегда завершается group by
-         ) as cpк --подзапрос во фром должен иметь псевдоним
+select c.name AS компания, count(p.name) AS количество_персон
+from company AS c
+         join person AS p on c.id = p.company_id
+group by c.name
+having count(p.company_id) = ( --считаем кол-во компаний у персон и открываем подзапрос для выполнения условий
+    select count(company_id) AS количество --считаем кол-во компаний по айди
+    from person                            --в таблице Персоны
+    group by company_id                    --которая сгруппирована по айди компаний
+    order by количество DESC limit 1       --и отсортирована по убыванию кол-ва, делаем лимит вывода онли первой строчки
 );
