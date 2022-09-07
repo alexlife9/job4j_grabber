@@ -49,7 +49,7 @@ import java.util.Map;
  *
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 07.09.2022
  */
 
@@ -64,6 +64,9 @@ public class MaxMin {
     }
 
     public <T> T forMax(List<T> value, Comparator<T> comparator) {
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("Пустое значение");
+        }
         T max = value.get(0);
         for (T t : value) {
             if (comparator.compare(t, max) > 0) {
