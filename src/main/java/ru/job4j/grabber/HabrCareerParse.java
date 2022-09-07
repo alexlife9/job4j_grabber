@@ -71,7 +71,7 @@ public class HabrCareerParse implements Parse {
     /**
      * Метод getPost сканирует непосредственно саму вакансию
      * @param row - строчка отдельной вакансии
-     * @return возвращаем (в виде готового объекта) вакансию с данными: название, линк, описание, дата
+     * @return возвращаем (в виде готового объекта) вакансию с данными: название, описание, линк, дата
      */
     private Post getPost(Element row) {
         try {
@@ -92,8 +92,8 @@ public class HabrCareerParse implements Parse {
 
             return new Post(
                     nameVacancy,
-                    linkVacancy,
                     description,
+                    linkVacancy,
                     dateTimeParser.parse(dataVacancy));
         } catch (Exception e) {
             throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */
