@@ -2,7 +2,6 @@ package ru.job4j.grabber;
 
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,8 +12,8 @@ import java.util.Properties;
  * PsqlStore
  *
  * @author Alex_life
- * @version 2.0
- * @since 08.09.2022
+ * @version 3.0
+ * @since 10.09.2022
  */
 public class PsqlStore implements Store, AutoCloseable {
 
@@ -30,18 +29,17 @@ public class PsqlStore implements Store, AutoCloseable {
     /**
      * метод осуществляет подключение к БД с через указанный файл настроек
      */
-    public void initConnection() throws Exception {
-        try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("psqlstore.properties")) {
-            cfg.load(in);
+    public void initConnection() throws SQLException {
+        try {
             Class.forName(cfg.getProperty("driver"));
-            cnn = DriverManager.getConnection(
-                    cfg.getProperty("url"),
-                    cfg.getProperty("login"),
-                    cfg.getProperty("password")
-            );
-        } catch (IOException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        cnn = DriverManager.getConnection(
+                cfg.getProperty("url"),
+                cfg.getProperty("login"),
+                cfg.getProperty("password")
+        );
     }
 
     /**
@@ -50,8 +48,9 @@ public class PsqlStore implements Store, AutoCloseable {
      */
     @Override
     public void save(Post post) {
-        String sql = "insert into post(name, text, link, created) values (?, ?, ?, ?) on conflict (link) do nothing;";
-        try (PreparedStatement ps = cnn.prepareStatement(sql)) {
+        try (PreparedStatement ps = cnn.prepareStatement(
+                "insert into post(name, text, link, created)"
+                        + "values (?, ?, ?, ?) on conflict (link) do nothing;")) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getDescription());
             ps.setString(3, post.getLink());
@@ -69,9 +68,10 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public List<Post> getAll() {
         List<Post> vacancies = new ArrayList<>();
-        try (PreparedStatement ps = cnn.prepareStatement("select * from post;")) {
+        try (PreparedStatement ps = cnn.prepareStatement(
+                "select * from post;")) {
             ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 Post post = intoResult(resultSet);
                 vacancies.add(post);
             }
@@ -89,8 +89,8 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public Post findById(int id) {
         Post vacancy = null;
-        String sql = String.format("select id, name, text, link, created from post where id = %s;", id);
-        try (PreparedStatement ps = cnn.prepareStatement(sql)) {
+        try (PreparedStatement ps = cnn.prepareStatement(
+                "select id, name, text, link, created from post where id = %s;", id)) {
             ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 vacancy = intoResult(resultSet);
@@ -122,18 +122,20 @@ public class PsqlStore implements Store, AutoCloseable {
 
     public static void main(String[] args) {
         try {
-            Properties properties = new Properties();
-            PsqlStore psqlStore = new PsqlStore(properties);
+            Properties config = new Properties();
+            InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("psqlstore.properties");
+            config.load(in);
+            try (PsqlStore psqlStore = new PsqlStore(config)) {
+                HabrCareerParse habrCareerParse = new HabrCareerParse(new HabrCareerDateTimeParser());
+                String pageLink = "https://career.habr.com/vacancies/java_developer?page=1";
 
-            HabrCareerParse habrCareerParse = new HabrCareerParse(new HabrCareerDateTimeParser());
-            String pageLink = "https://career.habr.com/vacancies/java_developer?page=1";
-
-            for (Post vacancy : habrCareerParse.list(pageLink)) {
-                psqlStore.save(vacancy);
-                System.out.println(vacancy);
+                for (Post vacancy : habrCareerParse.list(pageLink)) {
+                    psqlStore.save(vacancy);
+                    System.out.println(vacancy);
+                }
+                System.out.println(psqlStore.findById(1));
+                System.out.println(psqlStore.getAll());
             }
-            System.out.println(psqlStore.findById(1));
-            System.out.println(psqlStore.getAll());
         } catch (Exception e) {
             e.printStackTrace();
         }
