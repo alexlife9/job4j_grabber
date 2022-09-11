@@ -12,8 +12,8 @@ import java.util.Properties;
  * PsqlStore
  *
  * @author Alex_life
- * @version 3.0
- * @since 10.09.2022
+ * @version 4.0
+ * @since 11.09.2022
  */
 public class PsqlStore implements Store, AutoCloseable {
 
@@ -32,8 +32,8 @@ public class PsqlStore implements Store, AutoCloseable {
     public void initConnection() throws SQLException {
         try {
             Class.forName(cfg.getProperty("driver"));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new IllegalStateException();
         }
         cnn = DriverManager.getConnection(
                 cfg.getProperty("url"),
@@ -71,7 +71,7 @@ public class PsqlStore implements Store, AutoCloseable {
         try (PreparedStatement ps = cnn.prepareStatement(
                 "select * from post;")) {
             ResultSet resultSet = ps.executeQuery();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 Post post = intoResult(resultSet);
                 vacancies.add(post);
             }
@@ -90,9 +90,10 @@ public class PsqlStore implements Store, AutoCloseable {
     public Post findById(int id) {
         Post vacancy = null;
         try (PreparedStatement ps = cnn.prepareStatement(
-                "select id, name, text, link, created from post where id = %s;", id)) {
+                "select id, name, text, link, created from post where id = ?")) {
+            ps.setInt(1, id);
             ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 vacancy = intoResult(resultSet);
             }
         } catch (SQLException throwables) {
