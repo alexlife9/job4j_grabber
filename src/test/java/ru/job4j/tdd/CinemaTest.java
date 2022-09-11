@@ -30,13 +30,28 @@ import java.util.List;
  * После этого создаются тесты которые ДО написания кода сразу прогнозируют и проверяют работу кинотеатра
  * Чтобы описать тесты, потребовалось создать пустые классы реализующие нужные интерфейсы.
  *
+ *
+ * Принцип AAA
+ * Автоматизированное тестирование – это процесс написания тестов в виде повторно запускаемого блока кода.
+ * Тест – это проверка заведомо нужного поведения программы.
+ * В качестве противопоставления автоматизированному тестированию существует ручное тестирование. Оно предполагает,
+ * что тест выполняется не компьютером, а человеком, он сам делает проверки и решает, что верно, а что нет.
+ * Например, когда запускаем main, мы смотрим как ваша программа работает и что-то проверяем,
+ * то этот процесс можно назвать ручным тестированием.
+ *
+ * Все тесты базируются на принципе AAA – Arrange Act Assert.
+ * Arrange – указание входных и ожидаемых данных программы.
+ * Act – выполнение программы путем передачи входных и получение выходных данных.
+ * Assert – сравнение выходных и ожидаемых данных.
+ *
  * @author Alex_life
- * @version 1.0
- * @since 08.09.2022
+ * @version 2.0
+ * @since 11.09.2022
  */
 @Disabled
 public class CinemaTest {
 
+    @Disabled
     @Test
     public void whenBuy3D() {
         /* класс AccountCinema реализует интерфейс Account */
@@ -51,20 +66,17 @@ public class CinemaTest {
         assertThat(ticket).isEqualTo(new TicketUniversal());
     }
 
+    @Disabled
     @Test
     public void whenBuyNormal() {
-        /* класс AccountCinema реализует интерфейс Account */
         Account account = new AccountCinema();
-
-        /* класс CinemaNormal реализует интерфейс Cinema */
         Cinema cinema = new CinemaNormal();
         Calendar date = Calendar.getInstance();
-
-        /* в классе CinemaNormal будет метод buy для покупки билетов на сеансы обычных 2D фильмов */
         Ticket ticket = cinema.buy(account, 1, 1, date);
         assertThat(ticket).isEqualTo(new TicketUniversal());
     }
 
+    @Disabled
     @Test
     public void whenFind3D() {
         Cinema cinema = new Cinema3D();
@@ -76,18 +88,17 @@ public class CinemaTest {
         assertThat(sessions).isNull();
     }
 
+    @Disabled
     @Test
     public void whenFindNormal() {
         Cinema cinema = new CinemaNormal();
-        /* в классе CinemaNormal будет метод add для брони билетов */
         cinema.add(new SessionNormal());
-
-        /* в классе CinemaNormal будет метод find для поиска пустого места в зале */
         List<Session> sessions = cinema.find(session -> true);
         assertThat(sessions).isNull();
     }
 
     /* проверка возможности покупки на указанное место */
+    @Disabled
     @Test()
     public void whenInvalidPlace() {
         Account account = new AccountCinema();
@@ -99,6 +110,7 @@ public class CinemaTest {
     }
 
     /* проверка возможности покупки на указанную дату */
+    @Disabled
     @Test()
     public void whenInvalidDate() {
         Account account = new AccountCinema();
@@ -109,5 +121,19 @@ public class CinemaTest {
         });
     }
 
+    /* проверка невозможности покупки двух билетов разными людьми на одно место и на одно время */
+    @Disabled
+    @Test()
+    public void whenTwoTicketsOnePlaceOneDate() {
+        Account account = new AccountCinema();
+        Account account2 = new AccountCinema();
+        Cinema cinema = new Cinema3D();
+        Calendar date = Calendar.getInstance();
+        date.set(2000, 12, 27, 17, 30);
+        assertThrows(IllegalArgumentException.class, () -> {
+            cinema.buy(account, 1, 1, date);
+            cinema.buy(account2, 1, 1, date);
+        });
+    }
 
 }
