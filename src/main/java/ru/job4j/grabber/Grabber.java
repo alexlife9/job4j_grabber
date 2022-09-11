@@ -5,6 +5,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 
 import java.io.*;
+import java.util.List;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.newJob;
@@ -16,14 +17,15 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * Собственно это уже сама программа которая объединяет Парсер, Планировщик и Хранилище
  *
  * @author Alex_life
- * @version 1.0
- * @since 08.09.2022
+ * @version 2.0
+ * @since 11.09.2022
  */
 public class Grabber implements Grab {
     private final Properties cfg = new Properties();
 
-    public Store store() {
-        return null;
+    /* хранилище */
+    public Store store() throws Exception {
+        return new PsqlStore(cfg);
     }
 
     /* планировщик */
@@ -41,7 +43,14 @@ public class Grabber implements Grab {
     }
 
     /**
-     * метод init запускает собственно сам Граббер сайта
+     /**
+     * метод init загружает настройки Планировщика
+     *
+     * 1.создаем хранилище JobDataMap.
+     * 2.создаем задачу для Планировщика - JobDetail
+     * 3.добавляем в планировщик интервал с которым будет выполняться задача
+     * 4.добавляем триггер, в котором указали что запуск задачи будет производиться сразу
+     * 5.Загружаем задачу и триггер в планировщик с помощью метода scheduleJob
      * @param parse парсер из интерфейса Parse
      * @param store хранилище из интерфейса Store
      * @param scheduler планировщик
@@ -65,16 +74,29 @@ public class Grabber implements Grab {
     }
 
     public static class GrabJob implements Job {
-
+        /**
+         * метод execute выполняет всю основную работу парсера
+         *
+         * 1.получаем объекты из входящих данных с помощью методов getJobDetail и getJobDataMap
+         * 2.передаем полученные объекты в хранилище и парсер.
+         * 3.добавляем в хранилище все вакансии из указанного линка
+         *
+         * @param context ресурс входящих данных
+         */
         @Override
-        public void execute(JobExecutionContext context) throws JobExecutionException {
+        public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
-            /* TODO impl logic */
+            List<Post> vacancy;
+            try {
+                vacancy = parse.list("https://career.habr.com/vacancies/java_developer?page=");
+                vacancy.forEach(store::save);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 
     public static void main(String[] args) throws Exception {
         Grabber grab = new Grabber();
