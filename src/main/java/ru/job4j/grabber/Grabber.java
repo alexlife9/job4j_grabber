@@ -17,10 +17,12 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * Собственно это уже сама программа которая объединяет Парсер, Планировщик и Хранилище
  *
  * @author Alex_life
- * @version 2.0
- * @since 11.09.2022
+ * @version 3.0
+ * @since 12.09.2022
  */
 public class Grabber implements Grab {
+
+    private static final String SOURCE_LINK = "https://career.habr.com/vacancies/java_developer?page=";
     private final Properties cfg = new Properties();
 
     /* хранилище */
@@ -90,7 +92,7 @@ public class Grabber implements Grab {
             Parse parse = (Parse) map.get("parse");
             List<Post> vacancy;
             try {
-                vacancy = parse.list("https://career.habr.com/vacancies/java_developer?page=");
+                vacancy = parse.list(SOURCE_LINK);
                 vacancy.forEach(store::save);
             } catch (IOException e) {
                 e.printStackTrace();
