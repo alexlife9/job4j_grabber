@@ -45,13 +45,12 @@ import java.util.List;
  * Assert – сравнение выходных и ожидаемых данных.
  *
  * @author Alex_life
- * @version 2.0
- * @since 11.09.2022
+ * @version 3.0
+ * @since 12.09.2022
  */
 @Disabled
 public class CinemaTest {
 
-    @Disabled
     @Test
     public void whenBuy3D() {
         /* класс AccountCinema реализует интерфейс Account */
@@ -66,7 +65,6 @@ public class CinemaTest {
         assertThat(ticket).isEqualTo(new TicketUniversal());
     }
 
-    @Disabled
     @Test
     public void whenBuyNormal() {
         Account account = new AccountCinema();
@@ -76,7 +74,6 @@ public class CinemaTest {
         assertThat(ticket).isEqualTo(new TicketUniversal());
     }
 
-    @Disabled
     @Test
     public void whenFind3D() {
         Cinema cinema = new Cinema3D();
@@ -88,7 +85,6 @@ public class CinemaTest {
         assertThat(sessions).isNull();
     }
 
-    @Disabled
     @Test
     public void whenFindNormal() {
         Cinema cinema = new CinemaNormal();
@@ -98,7 +94,6 @@ public class CinemaTest {
     }
 
     /* проверка возможности покупки на указанное место */
-    @Disabled
     @Test()
     public void whenInvalidPlace() {
         Account account = new AccountCinema();
@@ -110,7 +105,6 @@ public class CinemaTest {
     }
 
     /* проверка возможности покупки на указанную дату */
-    @Disabled
     @Test()
     public void whenInvalidDate() {
         Account account = new AccountCinema();
@@ -122,7 +116,6 @@ public class CinemaTest {
     }
 
     /* проверка невозможности покупки двух билетов разными людьми на одно место и на одно время */
-    @Disabled
     @Test()
     public void whenTwoTicketsOnePlaceOneDate() {
         Account account = new AccountCinema();
