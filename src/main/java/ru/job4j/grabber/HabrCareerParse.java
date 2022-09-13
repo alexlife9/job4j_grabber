@@ -19,9 +19,8 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
  * По техническому заданию получаем данные с сайта - https:\\career.habr.com/vacancies/java_developer
  *
  * @author Alex_life
- * @version 9.0
- * мелкие правки, конструктор заменил
- * @since 06.09.2022
+ * @version 10.0
+ * @since 13.09.2022
  */
 public class HabrCareerParse implements Parse {
 
@@ -92,8 +91,8 @@ public class HabrCareerParse implements Parse {
 
             return new Post(
                     nameVacancy,
-                    description,
                     linkVacancy,
+                    description,
                     dateTimeParser.parse(dataVacancy));
         } catch (Exception e) {
             throw new IllegalArgumentException(); /* если аргументы не корректные, то прерываем программу */

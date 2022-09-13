@@ -12,8 +12,8 @@ import java.util.Properties;
  * PsqlStore
  *
  * @author Alex_life
- * @version 4.0
- * @since 11.09.2022
+ * @version 5.0
+ * @since 13.09.2022
  */
 public class PsqlStore implements Store, AutoCloseable {
 
@@ -49,11 +49,11 @@ public class PsqlStore implements Store, AutoCloseable {
     @Override
     public void save(Post post) {
         try (PreparedStatement ps = cnn.prepareStatement(
-                "insert into post(name, text, link, created)"
+                "insert into post(title, link, description, created)"
                         + "values (?, ?, ?, ?) on conflict (link) do nothing;")) {
             ps.setString(1, post.getTitle());
-            ps.setString(2, post.getDescription());
-            ps.setString(3, post.getLink());
+            ps.setString(2, post.getLink());
+            ps.setString(3, post.getDescription());
             ps.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
             ps.execute();
         } catch (SQLException throwables) {
@@ -90,7 +90,7 @@ public class PsqlStore implements Store, AutoCloseable {
     public Post findById(int id) {
         Post vacancy = null;
         try (PreparedStatement ps = cnn.prepareStatement(
-                "select id, name, text, link, created from post where id = ?")) {
+                "select id, title, link, description, created from post where id = ?")) {
             ps.setInt(1, id);
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {

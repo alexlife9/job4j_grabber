@@ -20,9 +20,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * Собственно это уже сама программа которая объединяет Парсер, Планировщик и Хранилище
  *
  * @author Alex_life
- * @version 4.0
- * добавил возможность получить данные через браузер от нашего граббера
- * @since 12.09.2022
+ * @version 5.0
+ * @since 13.09.2022
  */
 public class Grabber implements Grab {
 
@@ -104,6 +103,7 @@ public class Grabber implements Grab {
         }
     }
 
+    /* возможность получить данные через браузер от нашего граббера http:\\localhost:9000/ */
     public void web(Store store) {
         new Thread(() -> {
             try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
