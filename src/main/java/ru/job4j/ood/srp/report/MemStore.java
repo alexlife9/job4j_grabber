@@ -1,0 +1,30 @@
+package ru.job4j.ood.srp.report;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+/**
+ * Отчеты
+ *
+ * смотри Store
+ *
+ * @author Alex_life
+ * @version 1.0
+ * @since 24.09.2022
+ */
+public class MemStore implements Store {
+
+    private final List<Employee> employees = new ArrayList<>();
+
+    @Override
+    public void add(Employee em) {
+        employees.add(em);
+    }
+
+    @Override
+    public List<Employee> findBy(Predicate<Employee> filter) {
+        return employees.stream().filter(filter).collect(Collectors.toList());
+    }
+}
