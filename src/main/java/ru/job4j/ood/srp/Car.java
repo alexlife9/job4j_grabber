@@ -15,15 +15,10 @@ public class Car {
     private String color;
 
     public void typeFuel() {
-        if (engine.contains("ДВС")) {
-            fuel = "горючее";
-        }
     }
 
     public void color() {
-        if (color.contains("розовый")) {
-            System.out.println("для блондинки");
-        }
+
     }
 
     public String getFuel() {
