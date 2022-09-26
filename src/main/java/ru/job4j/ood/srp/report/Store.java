@@ -25,8 +25,9 @@ import java.util.function.Predicate;
  * 2. Реализуем в каждом классе метод generate со своей логикой согласно заданию
  *
  * @author Alex_life
- * @version 1.0
- * @since 24.09.2022
+ * @version 2.0
+ * добавил поддержку форматов XML и JSON
+ * @since 27.09.2022
  */
 public interface Store {
 

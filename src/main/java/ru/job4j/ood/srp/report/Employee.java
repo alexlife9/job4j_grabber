@@ -1,6 +1,8 @@
 package ru.job4j.ood.srp.report;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 /**
  * Отчеты
@@ -8,8 +10,8 @@ import java.util.Objects;
  * смотри Store
  *
  * @author Alex_life
- * @version 1.0
- * @since 24.09.2022
+ * @version 2.0
+ * @since 27.09.2022
  */
 public class Employee {
     private String name;
@@ -17,11 +19,17 @@ public class Employee {
     private Calendar fired;
     private double salary;
 
+    private List<Employee> employees = new ArrayList<>();
+
     public Employee(String name, Calendar hired, Calendar fired, double salary) {
         this.name = name;
         this.hired = hired;
         this.fired = fired;
         this.salary = salary;
+    }
+
+    public Employee(List<Employee> employeeList) {
+        this.employees = employeeList;
     }
 
     public String getName() {
