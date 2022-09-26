@@ -2,7 +2,8 @@ package ru.job4j.ood.srp.report;
 
 import java.util.function.Predicate;
 
-import static ru.job4j.ood.srp.report.ReportEngine.DATE_FORMAT;
+import static ru.job4j.ood.srp.report.FormatsForReports.DATE_FORMAT;
+import static ru.job4j.ood.srp.report.FormatsForReports.LS;
 
 /**
  * Отчеты
@@ -10,12 +11,14 @@ import static ru.job4j.ood.srp.report.ReportEngine.DATE_FORMAT;
  * смотри Store
  *
  * @author Alex_life
- * @version 1.0
- * @since 24.09.2022
+ * @version 2.0
+ * @since 26.09.2022
  */
 public class AccountingReport implements Report  {
 
     private final Store store;
+
+    public static final double EURO = 100.0;
 
     public AccountingReport(Store store) {
         this.store = store;
@@ -25,19 +28,14 @@ public class AccountingReport implements Report  {
     public String generate(Predicate<Employee> filter) {
         StringBuilder text = new StringBuilder();
         text.append("Name; Hired; Fired; Salary;")
-                .append(System.lineSeparator());
+                .append(LS);
         for (Employee employee : store.findBy(filter)) {
             text.append(employee.getName()).append(";")
                     .append(DATE_FORMAT.format(employee.getHired().getTime())).append(";")
                     .append(DATE_FORMAT.format(employee.getFired().getTime())).append(";")
-                    .append(salaryCalculation(employee)).append(";")
-                    .append(System.lineSeparator());
+                    .append(employee.getSalary() / EURO).append(";") /* перевели зарплату из рублей в евро*/
+                    .append(LS);
         }
         return text.toString();
-    }
-
-    public static double salaryCalculation(Employee employee) {
-        double euro = 100.0;
-        return employee.getSalary() * euro;
     }
 }
