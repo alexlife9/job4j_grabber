@@ -9,17 +9,17 @@ import java.util.Objects;
  *
  * смотри Store
  *
+ * Employee - модель данных.
+ *
  * @author Alex_life
- * @version 2.0
- * @since 27.09.2022
+ * @version 3.0
+ * @since 30.09.2022
  */
 public class Employee {
     private String name;
     private Calendar hired;
     private Calendar fired;
     private double salary;
-
-    private List<Employee> employees = new ArrayList<>();
 
     public Employee(String name, Calendar hired, Calendar fired, double salary) {
         this.name = name;
@@ -28,8 +28,7 @@ public class Employee {
         this.salary = salary;
     }
 
-    public Employee(List<Employee> employeeList) {
-        this.employees = employeeList;
+    public Employee(List<Employee> by) {
     }
 
     public String getName() {

@@ -1,7 +1,11 @@
 package ru.job4j.ood.srp.report;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.util.function.Predicate;
 
 /**
@@ -10,20 +14,25 @@ import java.util.function.Predicate;
  * смотри Store
  *
  * @author Alex_life
- * @version 1.0
- * @since 27.09.2022
+ * @version 2.0
+ * @since 30.09.2022
  */
 public class JSONReport implements Report {
 
+    private Gson gson;
     private final Store store;
 
     public JSONReport(Store store) {
         this.store = store;
+        try {
+            this.gson = new GsonBuilder().create();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public String generate(Predicate<Employee> filter) {
-        var lib = new GsonBuilder().create();
-        return lib.toJson(store.findBy(filter));
+        return gson.toJson(store.findBy(filter));
     }
 }

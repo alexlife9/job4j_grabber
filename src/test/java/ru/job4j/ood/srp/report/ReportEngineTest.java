@@ -1,7 +1,10 @@
 package ru.job4j.ood.srp.report;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.*;
@@ -14,8 +17,8 @@ import static ru.job4j.ood.srp.report.FormatsForReports.LS;
  * смотри Store
  *
  * @author Alex_life
- * @version 2.0
- * @since 26.09.2022
+ * @version 3.0
+ * @since 30.09.2022
  */
 
 public class ReportEngineTest {
@@ -102,5 +105,49 @@ public class ReportEngineTest {
                 .append(worker1.getSalary()).append(";")
                 .append(LS);
         assertThat(engine.generate(em -> true)).isEqualTo(expect.toString());
+    }
+
+    @Test
+    public void whenJSONReport() {
+        MemStore store = new MemStore();
+        Calendar now = Calendar.getInstance();
+        Gson gson = new GsonBuilder().create();
+        Employee worker = new Employee("Ivan", now, now, 100);
+        store.add(worker);
+        Report engine = new JSONReport(store);
+        StringBuilder expect = new StringBuilder()
+                .append("[{")
+                .append("\"name\":").append(gson.toJson(worker.getName())).append(",")
+                .append("\"hired\":").append(gson.toJson(worker.getHired())).append(",")
+                .append("\"fired\":").append(gson.toJson(worker.getFired())).append(",")
+                .append("\"salary\":").append(gson.toJson(worker.getSalary()))
+                .append("}]");
+        assertThat(engine.generate(em -> true)).isEqualTo(expect.toString());
+    }
+
+    @Test
+    public void whenXMLReport() {
+        MemStore store = new MemStore();
+        Calendar now = Calendar.getInstance();
+        Employee worker = new Employee("Ivan", now, now, 100);
+        store.add(worker);
+        Report engine = new XMLReport(store);
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        String expect = String.format("""
+                           <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                           <employees>
+                               <employees>
+                                   <fired>%s</fired>
+                                   <hired>%s</hired>
+                                   <name>%s</name>
+                                   <salary>%s</salary>
+                               </employees>
+                           </employees>
+                           """,
+                date.format(worker.getHired().getTime()),
+                date.format(worker.getFired().getTime()),
+                worker.getName(),
+                worker.getSalary());
+        assertThat(engine.generate(em -> true)).isEqualTo(expect);
     }
 }
