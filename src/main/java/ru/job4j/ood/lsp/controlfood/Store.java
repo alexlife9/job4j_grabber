@@ -9,24 +9,18 @@ import java.util.List;
  * Интерфейс Store содержит три метода:
  * 1. checkSort - проверяет срок годности еды для решения куда распределить продукт.
  * Конкретные реализации прописываем в классах-наследниках
- * 2. expirationDatePercentage - вычисление остатка срока годности в процентах
+ * 2. expirationDatePercentage - вычисление остатка срока годности в процентах - Вынес в отдельный класс
  * 3. возвращает список добавленных продуктов
  *
  * @author Alex_life
- * @version 1.0
- * @since 28.09.2022
+ * @version 2.0
+ * @since 30.09.2022
  */
 public interface Store {
 
-    void checkSort(Food food);
-
-    default double expirationDatePercentage(Food food) {
-        Date currentDate = Calendar.getInstance().getTime();
-        Date expirationDate = food.getExpiryDate().getTime();
-        Date createDate = food.getCreateDate().getTime();
-        return ((expirationDate.getTime() - currentDate.getTime()) * 100.0)
-                / (expirationDate.getTime() - createDate.getTime());
-    };
+    default boolean checkSort(Food food) {
+        return false;
+    }
 
     List<Food> getFoods();
 }

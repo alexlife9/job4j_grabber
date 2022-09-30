@@ -1,5 +1,6 @@
 package ru.job4j.ood.lsp.controlfood;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -9,17 +10,18 @@ import java.util.Objects;
  * Класс Food описывает продукты
  *
  * @author Alex_life
- * @version 1.0
- * @since 28.09.2022
+ * @version 2.0
+ * Заменил на LocalDate для более наглядного отображения разбежки сроков годности в тестах
+ * @since 30.09.2022
  */
-public class Food {
+public abstract class Food {
     private final String name;
-    private final Calendar expiryDate;
-    private final Calendar createDate;
+    private final LocalDate expiryDate;
+    private final LocalDate createDate;
     private double price; /* цена будет меняться с учетом скидки, поэтому не финал */
-    private final int discount;
+    private final int discount; /* процент скидки на товар */
 
-    public Food(String name, Calendar expiryDate, Calendar createDate, double price, int discount) {
+    public Food(String name, LocalDate expiryDate, LocalDate createDate, double price, int discount) {
         this.name = name;
         this.expiryDate = expiryDate;
         this.createDate = createDate;
@@ -31,11 +33,11 @@ public class Food {
         return name;
     }
 
-    public Calendar getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public Calendar getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
