@@ -14,13 +14,38 @@ package ru.job4j.ood.lsp.parking;
  * Необходимо разработать сервис для учета парковки машин.
  *
  * Реализация:
- * 1. Делаем интерфейсы Transport и Parking
- * 2. Реализуем классы Car и Truck от интерфейса Transport
- * 3. Реализуем класс CarParking и TruckParking
+ * 1. Делаем интерфейс Parking c методами без реализации
+ * 2. Делаем модель Transport с описанием транспорта
+ * 3. Реализуем класс GeneralParking от интерфейса Parking
  *
  * @author Alex_life
- * @version 1.0
- * @since 01.10.2022
+ * @version 2.0
+ * @since 02.10.2022
  */
-public interface Transport {
+public abstract class Transport {
+    private String name;
+    private int sizePlace; /* размер места на парковку */
+
+    public static final int SIZE_CAR = 1; /* По умолчанию для легковых = 1 */
+
+    public Transport(String name, int sizePlace) {
+        this.name = name;
+        this.sizePlace = sizePlace;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getSize() {
+        return sizePlace;
+    }
+
+    public void setSize(int size) {
+        this.sizePlace = size;
+    }
 }

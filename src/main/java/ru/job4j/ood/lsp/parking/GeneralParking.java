@@ -1,5 +1,7 @@
 package ru.job4j.ood.lsp.parking;
 
+import java.util.List;
+
 /**
  * Парковка машин
  *
@@ -8,8 +10,23 @@ package ru.job4j.ood.lsp.parking;
  * GeneralParking - общая парковка для легковых и грузовых
  *
  * @author Alex_life
- * @version 1.0
- * @since 01.10.2022
+ * @version 2.0
+ * @since 02.10.2022
  */
-public class GeneralParking {
+public class GeneralParking implements Parking {
+
+    @Override
+    public boolean place(Transport transport) {
+        return false;
+    }
+
+    @Override
+    public boolean condition(Transport transport) {
+        return false;
+    }
+
+    @Override
+    public List<Transport> getAll() {
+        return null;
+    }
 }
