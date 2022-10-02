@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.*;
  * Хранилище продуктов
  *
  * @author Alex_life
- * @version 3.0
- * @since 01.10.2022
+ * @version 4.0
+ * @since 03.10.2022
  */
 class ControlQualityTest {
     LocalDate expiryDate;
@@ -60,8 +60,8 @@ class ControlQualityTest {
 
     @Test
     public void whenShopDiscount() {
-        expiryDate = LocalDate.of(2022, 10, 5); /* сдохнет через 5 дней */
-        createDate = LocalDate.of(2022, 9, 10); /* сделано 20 дней назад */
+        expiryDate = LocalDate.now().plusDays(5); /* сдохло сегодня */
+        createDate = LocalDate.now().minusDays(20); /* сделано 30 дней назад */
         Food fish = new Fish("Fish", expiryDate, createDate, 120.0, 30);
         controlQuality.distribution(fish);
         assertThat(shop.getFoods().contains(fish)).isTrue();
@@ -99,5 +99,4 @@ class ControlQualityTest {
         assertThat(meat.getPrice()).isEqualTo(100);
         assertThat(meatD.getPrice()).isEqualTo(120);
     }
-
 }
