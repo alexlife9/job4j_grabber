@@ -8,14 +8,14 @@ import java.util.List;
  * смотри Transport
  *
  * @author Alex_life
- * @version 2.0
- * @since 02.10.2022
+ * @version 3.0
+ * @since 04.10.2022
  */
 public interface Parking {
 
-    boolean place(Transport transport);
+    boolean place(Transport transport); /* метод добавляет транспорт и занимает место на парковке */
 
-    boolean condition(Transport transport);
+    boolean condition(); /* метод определяет остались ли свободные места */
 
-    List<Transport> getAll();
+    List<Transport> getAll(); /* метод возвращает все занятые места на парковке */
 }

@@ -21,7 +21,7 @@ public class CarParking implements Parking {
     }
 
     @Override
-    public boolean condition(Transport transport) {
+    public boolean condition() {
         return false;
     }
 
