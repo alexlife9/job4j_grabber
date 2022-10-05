@@ -18,18 +18,16 @@ package ru.job4j.ood.lsp.parking;
  * 2. Делаем модель Transport с описанием транспорта
  * 3. Реализуем класс GeneralParking от интерфейса Parking
  * 4. Делаем две реализации Transport - Car и Truck
- * 5. Шириной парковочного места пренебрегаем.
  *
  * @author Alex_life
- * @version 3.0
- * @since 04.10.2022
+ * @version 4.0
+ * @since 05.10.2022
  */
 public abstract class Transport {
     private String name;
-    public static int sizePlace; /* размер места конкретного транспорта для парковки */
+    public int sizePlace; /* размер места конкретного транспорта для парковки */
 
-    public static final int SIZE_CAR = 1; /* По умолчанию для легковых = 1. Условно это площадь, равная 5м х 3м */
-    public static final int SIZE_TRUCK_MAX = 4; /* максимальный размер места для грузовика = 4. Площадь = 20м х 3м */
+    public static final int SIZE = 1;
 
     public Transport(String name, int sizePlace) {
         this.name = name;

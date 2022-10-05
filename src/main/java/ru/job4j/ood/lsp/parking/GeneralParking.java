@@ -3,8 +3,7 @@ package ru.job4j.ood.lsp.parking;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.job4j.ood.lsp.parking.Transport.SIZE_CAR;
-import static ru.job4j.ood.lsp.parking.Transport.SIZE_TRUCK_MAX;
+import static ru.job4j.ood.lsp.parking.Transport.SIZE;
 
 /**
  * Парковка машин
@@ -14,46 +13,56 @@ import static ru.job4j.ood.lsp.parking.Transport.SIZE_TRUCK_MAX;
  * GeneralParking - общая парковка для легковых и грузовых
  *
  * @author Alex_life
- * @version 3.0
- * @since 04.10.2022
+ * @version 4.0
+ * @since 05.10.2022
  */
 public class GeneralParking implements Parking {
-
-    List<Transport> carParkingList = new ArrayList<>(); /* список всех легковушек, занявших места на паркинге */
-    List<Transport> truckParkingList = new ArrayList<>(); /* список всех грузовиков, занявших места на паркинге */
-    int amountPlaceCar; /* кол-во свободных мест на парковке для легковушек */
-    int amountPlaceTruck; /* кол-во свободных мест на парковке для грузовиков */
+    private final List<Transport> carParkingList; /* список всех легковушек, занявших места на паркинге */
+    private final List<Transport> truckParkingList; /* список всех грузовиков, занявших места на паркинге */
+    private int amountPlaceCar; /* кол-во свободных мест на парковке для легковушек */
+    private int amountPlaceTruck; /* кол-во свободных мест на парковке для грузовиков */
 
     public GeneralParking(int placeCar, int placeTruck) {
         this.amountPlaceCar = placeCar;
         this.amountPlaceTruck = placeTruck;
+        this.carParkingList = new ArrayList<>();
+        this.truckParkingList = new ArrayList<>();
     }
 
     public void validSizeTransport(Transport tr) {
-        if (SIZE_CAR == Transport.sizePlace) {
+        int size = tr.getSize();
+        if (size == SIZE && amountPlaceCar >= 0) { /* если размера тачки = 1 И есть свободные легковые места */
             carParkingList.add(tr);
             amountPlaceCar--; /* уменьшаем кол-во свободных мест */
         }
-        if (SIZE_TRUCK_MAX == Transport.sizePlace) {
+        if (size > SIZE && amountPlaceTruck >= 0) { /* если размер тачки > 1 И есть свободные грузовые места */
             truckParkingList.add(tr);
-            amountPlaceTruck--; /* уменьшаем кол-во свободных мест */
+            amountPlaceTruck--;
         }
-        /* тут написать дальнейшую логику чтобы грузовик занимал несколько легковых мест
-        и несколько легковых одно место предназначенное для грузовика */
+        if (size > SIZE && amountPlaceTruck == 0 /*если грузовик не лезет на грузовые места и есть свободные легковые*/
+                && amountPlaceCar >= size) {
+            carParkingList.add(tr);
+            amountPlaceCar--;
+        }
     }
 
     @Override
     public boolean place(Transport transport) {
-        if (condition()) {
+        boolean rsl = false;
+        if (!condition()) {
             validSizeTransport(transport);
+            rsl = true;
         }
-        return false;
+        return rsl;
     }
 
-    /* проверяем не заняты ли еще все места на общей парковке */
+    /**
+     * проверяем не заняты ли еще все места на общей парковке
+     * @return если мест вообще нет, то вернется true
+     */
     @Override
     public boolean condition() {
-        return carParkingList.size() != amountPlaceCar && truckParkingList.size() != amountPlaceTruck;
+        return amountPlaceCar < carParkingList.size() && amountPlaceTruck < truckParkingList.size();
     }
 
     /* возвращаем список всего транспорта находящегося на парковке */
