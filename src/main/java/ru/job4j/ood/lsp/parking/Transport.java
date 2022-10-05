@@ -20,14 +20,12 @@ package ru.job4j.ood.lsp.parking;
  * 4. Делаем две реализации Transport - Car и Truck
  *
  * @author Alex_life
- * @version 4.0
+ * @version 5.0
  * @since 05.10.2022
  */
 public abstract class Transport {
     private String name;
     public int sizePlace; /* размер места конкретного транспорта для парковки */
-
-    public static final int SIZE = 1;
 
     public Transport(String name, int sizePlace) {
         this.name = name;

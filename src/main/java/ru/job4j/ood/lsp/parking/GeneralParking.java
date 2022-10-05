@@ -3,7 +3,9 @@ package ru.job4j.ood.lsp.parking;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.job4j.ood.lsp.parking.Transport.SIZE;
+import static ru.job4j.ood.lsp.parking.ConstantForParking.CAPACITY_PARK_CAR;
+import static ru.job4j.ood.lsp.parking.ConstantForParking.CAPACITY_PARK_TR;
+import static ru.job4j.ood.lsp.parking.ConstantForParking.SIZE;
 
 /**
  * Парковка машин
@@ -13,7 +15,7 @@ import static ru.job4j.ood.lsp.parking.Transport.SIZE;
  * GeneralParking - общая парковка для легковых и грузовых
  *
  * @author Alex_life
- * @version 4.0
+ * @version 5.0
  * @since 05.10.2022
  */
 public class GeneralParking implements Parking {
@@ -25,25 +27,30 @@ public class GeneralParking implements Parking {
     public GeneralParking(int placeCar, int placeTruck) {
         this.amountPlaceCar = placeCar;
         this.amountPlaceTruck = placeTruck;
-        this.carParkingList = new ArrayList<>();
-        this.truckParkingList = new ArrayList<>();
+        this.carParkingList = new ArrayList<>(CAPACITY_PARK_CAR);
+        this.truckParkingList = new ArrayList<>(CAPACITY_PARK_TR);
     }
 
-    public void validSizeTransport(Transport tr) {
+    public boolean validSizeTransport(Transport tr) {
+        boolean rsl = false;
         int size = tr.getSize();
-        if (size == SIZE && amountPlaceCar >= 0) { /* если размера тачки = 1 И есть свободные легковые места */
+        if (size == SIZE && amountPlaceCar >= SIZE) { /* если размера тачки = 1 И есть свободные легковые места */
             carParkingList.add(tr);
             amountPlaceCar--; /* уменьшаем кол-во свободных мест */
+            rsl = true;
         }
-        if (size > SIZE && amountPlaceTruck >= 0) { /* если размер тачки > 1 И есть свободные грузовые места */
+        if (size > SIZE && amountPlaceTruck >= SIZE) { /* если размер тачки > 1 И есть свободные грузовые места */
             truckParkingList.add(tr);
             amountPlaceTruck--;
+            rsl = true;
         }
-        if (size > SIZE && amountPlaceTruck == 0 /*если грузовик не лезет на грузовые места и есть свободные легковые*/
-                && amountPlaceCar >= size) {
+        if (size > SIZE && amountPlaceTruck == SIZE /*если грузовик не лезет на грузовые места и есть свободные легковые*/
+                && amountPlaceCar >= SIZE) {
             carParkingList.add(tr);
             amountPlaceCar--;
+            rsl = true;
         }
+        return rsl;
     }
 
     @Override
@@ -69,8 +76,8 @@ public class GeneralParking implements Parking {
     @Override
     public List<Transport> getAll() {
         List<Transport> all = new ArrayList<>();
-        all.add((Transport) carParkingList);
-        all.add((Transport) truckParkingList);
+        all.addAll(carParkingList);
+        all.addAll(truckParkingList);
         return all;
     }
 }
