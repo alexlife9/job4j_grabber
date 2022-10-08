@@ -3,9 +3,7 @@ package ru.job4j.ood.lsp.parking;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.job4j.ood.lsp.parking.ConstantForParking.CAPACITY_PARK_CAR;
-import static ru.job4j.ood.lsp.parking.ConstantForParking.CAPACITY_PARK_TR;
-import static ru.job4j.ood.lsp.parking.ConstantForParking.SIZE;
+import static ru.job4j.ood.lsp.parking.Car.SIZE;
 
 /**
  * Парковка машин
@@ -15,8 +13,8 @@ import static ru.job4j.ood.lsp.parking.ConstantForParking.SIZE;
  * GeneralParking - общая парковка для легковых и грузовых
  *
  * @author Alex_life
- * @version 5.0
- * @since 05.10.2022
+ * @version 6.0
+ * @since 09.10.2022
  */
 public class GeneralParking implements Parking {
     private final List<Transport> carParkingList; /* список всех легковушек, занявших места на паркинге */
@@ -27,38 +25,37 @@ public class GeneralParking implements Parking {
     public GeneralParking(int placeCar, int placeTruck) {
         this.amountPlaceCar = placeCar;
         this.amountPlaceTruck = placeTruck;
-        this.carParkingList = new ArrayList<>(CAPACITY_PARK_CAR);
-        this.truckParkingList = new ArrayList<>(CAPACITY_PARK_TR);
+        this.carParkingList = new ArrayList<>(10);
+        this.truckParkingList = new ArrayList<>(10);
     }
 
-    public boolean validSizeTransport(Transport tr) {
-        boolean rsl = false;
+    public boolean validSizeAndAddTransport(Transport tr) {
         int size = tr.getSize();
         if (size == SIZE && amountPlaceCar >= SIZE) { /* если размера тачки = 1 И есть свободные легковые места */
             carParkingList.add(tr);
             amountPlaceCar--; /* уменьшаем кол-во свободных мест */
-            rsl = true;
+            return true;
         }
         if (size > SIZE && amountPlaceTruck >= SIZE) { /* если размер тачки > 1 И есть свободные грузовые места */
             truckParkingList.add(tr);
             amountPlaceTruck--;
-            rsl = true;
+            return true;
         }
-        if (size > SIZE && amountPlaceTruck == SIZE /*если грузовик не лезет на грузовые места и есть свободные легковые*/
-                && amountPlaceCar >= SIZE) {
+        /* если грузовик не лезет на грузовые места и есть свободные легковые
+        * Легковая машина может занять только место, предназначенное для легковой машины */
+        if (amountPlaceTruck < SIZE && amountPlaceCar >= size && amountPlaceCar >= size) {
             carParkingList.add(tr);
-            amountPlaceCar--;
-            rsl = true;
+            amountPlaceCar = amountPlaceCar - size;
+            return true;
         }
-        return rsl;
+        return false;
     }
 
     @Override
     public boolean place(Transport transport) {
         boolean rsl = false;
         if (!condition()) {
-            validSizeTransport(transport);
-            rsl = true;
+            rsl = validSizeAndAddTransport(transport);
         }
         return rsl;
     }

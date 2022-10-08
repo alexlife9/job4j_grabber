@@ -1,6 +1,6 @@
 package ru.job4j.ood.lsp.parking;
 
-import static ru.job4j.ood.lsp.parking.ConstantForParking.SIZE;
+import static ru.job4j.ood.lsp.parking.Car.SIZE;
 
 /**
  * Парковка машин
@@ -8,8 +8,8 @@ import static ru.job4j.ood.lsp.parking.ConstantForParking.SIZE;
  * смотри Transport
  *
  * @author Alex_life
- * @version 5.0
- * @since 05.10.2022
+ * @version 6.0
+ * @since 09.10.2022
  */
 public class Truck extends Transport {
 
