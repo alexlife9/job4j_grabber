@@ -10,13 +10,13 @@ import static org.assertj.core.api.Assertions.*;
  * смотри Transport
  *
  * @author Alex_life
- * @version 6.0
+ * @version 7.0
  * @since 09.10.2022
  */
 class GeneralParkingTest {
     Car car1 = new Car("car1");
     Car car2 = new Car("car2");
-    Truck truck1 = new Truck("truck1", 3);
+    Truck truck1 = new Truck("truck1", 2);
     Truck truck2 = new Truck("truck2", 10);
 
     @Test
@@ -54,8 +54,8 @@ class GeneralParkingTest {
     @Test
     public void generalParkingTrackOnTrackPAndCarP() {
         GeneralParking generalParking = new GeneralParking(2, 1);
-        assertThat(generalParking.place(truck1)).isTrue();
         assertThat(generalParking.place(truck2)).isTrue();
+        assertThat(generalParking.place(truck1)).isTrue();
     }
 
     @Test
@@ -67,7 +67,7 @@ class GeneralParkingTest {
 
     @Test
     public void generalParking2TrackOnCarP() {
-        GeneralParking generalParking = new GeneralParking(2, 0);
+        GeneralParking generalParking = new GeneralParking(13, 0);
         assertThat(generalParking.place(truck1)).isTrue();
         assertThat(generalParking.place(truck2)).isTrue();
     }

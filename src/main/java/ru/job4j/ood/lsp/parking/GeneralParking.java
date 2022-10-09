@@ -13,7 +13,7 @@ import static ru.job4j.ood.lsp.parking.Car.SIZE;
  * GeneralParking - общая парковка для легковых и грузовых
  *
  * @author Alex_life
- * @version 6.0
+ * @version 7.0
  * @since 09.10.2022
  */
 public class GeneralParking implements Parking {
@@ -25,8 +25,8 @@ public class GeneralParking implements Parking {
     public GeneralParking(int placeCar, int placeTruck) {
         this.amountPlaceCar = placeCar;
         this.amountPlaceTruck = placeTruck;
-        this.carParkingList = new ArrayList<>(10);
-        this.truckParkingList = new ArrayList<>(10);
+        this.carParkingList = new ArrayList<>(amountPlaceCar);
+        this.truckParkingList = new ArrayList<>(amountPlaceTruck);
     }
 
     public boolean validSizeAndAddTransport(Transport tr) {
@@ -43,7 +43,7 @@ public class GeneralParking implements Parking {
         }
         /* если грузовик не лезет на грузовые места и есть свободные легковые
         * Легковая машина может занять только место, предназначенное для легковой машины */
-        if (amountPlaceTruck < SIZE && amountPlaceCar >= size && amountPlaceCar >= size) {
+        if (amountPlaceTruck < SIZE && amountPlaceCar >= size) {
             carParkingList.add(tr);
             amountPlaceCar = amountPlaceCar - size;
             return true;
