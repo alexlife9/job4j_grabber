@@ -14,30 +14,38 @@ import java.util.*;
  * поскольку нам удобно читать пункты меню сверху-вниз и слева-направо.
  *
  * @author Alex_life
- * @version 1.0
- * @since 03.10.2022
+ * @version 2.0
+ * @since 15.10.2022
  */
 public class SimpleMenu implements Menu {
 
-    private final List<MenuItem> rootElements = new ArrayList<>();
+    private final List<MenuItem> rootElements = new ArrayList<>(); /* список корневых пунктов меню */
 
     @Override
     public boolean add(String parentName, String childName, ActionDelegate actionDelegate) {
+        /* если дочерний пункт существует, то не добавляем в корень */
         if (findItem(childName).isPresent()) {
             return false;
         }
+
+        /* сравнимаем имя корневого пункта с текущим пунктом. если true, то добавляем в корень новый пункт меню */
         if (Objects.equals(Menu.ROOT, parentName)) {
             return rootElements.add(new SimpleMenuItem(childName, actionDelegate));
         }
-        return findItem(parentName).map(info -> info.menuItem.getChildren()
-                .add(new SimpleMenuItem(childName, actionDelegate))).orElse(false);
+
+        return findItem(parentName).map(info ->
+                info.menuItem.getChildrenName()
+                .add(new SimpleMenuItem(childName, actionDelegate)))
+                .orElse(false);
     }
 
+    /* метод выбора пункта меню. возвращает результат поиска по меню */
     @Override
     public Optional<MenuItemInfo> select(String itemName) {
         return findItem(itemName).map(info -> new MenuItemInfo(info.menuItem, info.number));
     }
 
+    /* переопределенный метод iterator */
     @Override
     public Iterator<MenuItemInfo> iterator() {
         return new Iterator<>() {
@@ -71,11 +79,12 @@ public class SimpleMenu implements Menu {
         return info;
     }
 
+    /* класс SimpleMenuItem - это реализация MenuItem для SimpleMenu */
     private static class SimpleMenuItem implements MenuItem {
 
-        private final String name;
-        private final List<MenuItem> children = new ArrayList<>();
-        private final ActionDelegate actionDelegate;
+        private final String name; /* имя пункта меню */
+        private final List<MenuItem> childrenName = new ArrayList<>(); /* лист вложенных пунктов */
+        private final ActionDelegate actionDelegate; /* некое действие которое будет делаться при выборе пункта меню */
 
         public SimpleMenuItem(String name, ActionDelegate actionDelegate) {
             this.name = name;
@@ -88,8 +97,8 @@ public class SimpleMenu implements Menu {
         }
 
         @Override
-        public List<MenuItem> getChildren() {
-            return children;
+        public List<MenuItem> getChildrenName() {
+            return childrenName;
         }
 
         @Override
@@ -98,12 +107,16 @@ public class SimpleMenu implements Menu {
         }
     }
 
+    /* класс DFSIterator - это итератор, основанный на поиске в глубину. Но немного модифицированный,
+    поскольку нам удобно читать пункты меню сверху-вниз и слева-направо. */
     private class DFSIterator implements Iterator<ItemInfo> {
 
-        Deque<MenuItem> stack = new LinkedList<>();
+        Deque<MenuItem> stack = new LinkedList<>(); /* очередь из пунктов меню */
 
-        Deque<String> numbers = new LinkedList<>();
+        Deque<String> numbers = new LinkedList<>(); /* очередь из номеров */
 
+        /* в конструкторе итератора идем по всем корневым пунктам меню, добавляем их в стек, и также добавляеем к ним
+        * сразу номера по возрастанию от единицы, добавляя после номера точку-разделитель */
         DFSIterator() {
             int number = 1;
             for (MenuItem item : rootElements) {
@@ -112,6 +125,7 @@ public class SimpleMenu implements Menu {
             }
         }
 
+        /* пока существует элемент в стеке идем по итератору. вызываем next */
         @Override
         public boolean hasNext() {
             return !stack.isEmpty();
@@ -124,7 +138,7 @@ public class SimpleMenu implements Menu {
             }
             MenuItem current = stack.removeFirst();
             String lastNumber = numbers.removeFirst();
-            List<MenuItem> children = current.getChildren();
+            List<MenuItem> children = current.getChildrenName();
             int currentNumber = children.size();
             for (var i = children.listIterator(children.size()); i.hasPrevious();) {
                 stack.addFirst(i.previous());
@@ -135,8 +149,8 @@ public class SimpleMenu implements Menu {
 
     }
 
+    /* класс ItemInf служит для того чтобы скомпоновать пункт меню и номер подпункта (1.1., 1.1.1. и т.д.) */
     private static class ItemInfo {
-
         MenuItem menuItem;
         String number;
 

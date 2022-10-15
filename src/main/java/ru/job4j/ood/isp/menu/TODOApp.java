@@ -6,63 +6,68 @@ import java.util.Scanner;
  * Приложение для построения и вывода списка задач пользователя.
  *
  * @author Alex_life
- * @version 1.0
- * @since 09.10.2022
+ * @version 2.0
+ * @since 15.10.2022
  */
 public class TODOApp {
-    private static final String ADD_TODO_ROOT = "1. Добавить задание в корень списка";
-    private static final String ADD_CHILD_TODO = "2. Выбрать номер задания чтобы добавить в него подзадание";
-    private static final String SHOW_TODOS = "3. Вывести список всех заданий";
-    private static final String QUIT = "4. Завершить работу программы";
-    private static final String ADD_TODO_HERE = "Введите номер меню для добавление в него подзадания:";
-    private static final String ENTER_TODO = "Введите описание задания";
-    private static final String ENTER_TODO_INNER = "Введите вложенное задание";
-    private static final String TODO_CREATED_SAVE = "Задание создано и сохранено";
-    private static final String LINE = System.lineSeparator();
-    public static final ActionDelegate ACTION_OUT = System.out::println;
+    private static final int ADD_ROOT_TODO = 1;
+    private static final int ADD_CHILD_TODO = 2;
+    private static final int SHOW_TODOS = 3;
+    private static final int QUIT = 4;
+    private static final String TASK_MSG = "Введите описание основного задания";
+    private static final String TASK_NUMBER_MSG = "Введите номер меню для добавление в него подзадания:";
+    private static final String INNER_TASK_MSG = "Введите описание вложенного задания";
+    private static final String CREATED_SAVE_MSG = "Задание создано и сохранено";
+    private static final String ALL_TODOS_MSG = "Список всех заданий:";
+    private static final String QUIT_MSG = "Работа завершена";
+    private static final String LS = System.lineSeparator();
+    private static final ActionDelegate ACTION_PRINTLN = System.out::println;
+    public static final String START_MENU = """
+            Меню. Введите номер пункта:
+            1. Добавить задание в корень списка
+            2. Добавить подзадание
+            3. Вывести список всех заданий
+            4. Завершить работу программы
+            """;
 
     public static void main(String[] args) {
         Menu savesTodo = new SimpleMenu();
         MenuPrinter menuPrinter = new Printer();
         Scanner scanner = new Scanner(System.in);
-        boolean run = true;        while (run) {
-            System.out.println("Меню. Введите номер пункта:");
-            System.out.println(ADD_TODO_ROOT);
-            System.out.println(ADD_CHILD_TODO);
-            System.out.println(SHOW_TODOS);
-            System.out.println(QUIT);
-            int choice = Integer.parseInt(scanner.nextLine());
-            if (choice == 1) {
-                System.out.println(ENTER_TODO);
-                String taskName = scanner.nextLine();
-                savesTodo.add(Menu.ROOT, taskName, ACTION_OUT);
-                System.out.println(TODO_CREATED_SAVE);
-                System.out.println(LINE);
+        String parentName;
+        String childName;
+        int userInput = -1;
+        while (QUIT != userInput) {
+            System.out.println(START_MENU);
+            userInput = scanner.nextInt();
+            if (ADD_ROOT_TODO == userInput) {
+                System.out.println(TASK_MSG);
+                parentName = scanner.next();
+                savesTodo.add(Menu.ROOT, parentName, ACTION_PRINTLN);
+                System.out.println(CREATED_SAVE_MSG);
+                System.out.println(LS);
             }
 
-            if (choice == 2) {
-                System.out.println(ADD_TODO_HERE);
+            if (ADD_CHILD_TODO == userInput) {
+                System.out.println(TASK_NUMBER_MSG);
+                parentName = scanner.next();
+                if (savesTodo.select(parentName).isEmpty()) {
+                    savesTodo.add(Menu.ROOT, parentName, ACTION_PRINTLN);
+                    System.out.println(savesTodo);
+                }
+                System.out.println(INNER_TASK_MSG);
+                childName = scanner.next();
+                savesTodo.add(parentName, childName, ACTION_PRINTLN);
+                System.out.println(CREATED_SAVE_MSG);
+                System.out.println(LS);
+            }
+
+            if (SHOW_TODOS == userInput) {
+                System.out.println(ALL_TODOS_MSG);
                 menuPrinter.print(savesTodo);
-                String innerNumber = scanner.nextLine();
-                /* логика выбора корневого пункта */
-                System.out.println(ENTER_TODO_INNER);
-                String innerTask = scanner.nextLine();
-                /* тут надо как-то сделать взаимосвязь parentTask с innerNumber */
-                savesTodo.add(Menu.ROOT, innerTask, ACTION_OUT); /* пока Menu.ROOT оставил вместо parentTask */
-                System.out.println(TODO_CREATED_SAVE);
-                System.out.println(LINE);
-            }
-
-            if (choice == 3) {
-                System.out.println("Общий список заданий:");
-                menuPrinter.print(savesTodo);
-                System.out.println(LINE);
-            }
-
-            if (choice == 4) {
-                run = false;
+                System.out.println(LS);
             }
         }
-        System.out.println("Работа завершена");
+        System.out.println(QUIT_MSG);
     }
 }
