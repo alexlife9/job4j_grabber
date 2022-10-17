@@ -9,7 +9,7 @@ import java.util.Objects;
  * смотри User
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 17.10.2022
  */
 public class Post {
@@ -61,13 +61,12 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return Objects.equals(id, post.id)
-                && Objects.equals(text, post.text) && Objects.equals(comments, post.comments);
+        return Objects.equals(id, post.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, comments);
+        return Objects.hash(id);
     }
 
     @Override
@@ -77,10 +76,5 @@ public class Post {
                 + ", text='" + text + '\''
                 + ", comments=" + comments
                 + '}';
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 }

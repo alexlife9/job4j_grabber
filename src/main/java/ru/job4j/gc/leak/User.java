@@ -26,7 +26,7 @@ import java.util.Objects;
  * Запуск программы - в классе Menu
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 17.10.2022
  */
 public class User {
@@ -67,10 +67,5 @@ public class User {
         return "User{"
                 + "name='" + name + '\''
                 + '}';
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 }

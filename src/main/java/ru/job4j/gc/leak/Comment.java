@@ -8,7 +8,7 @@ import java.util.Objects;
  * смотри User
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 17.10.2022
  */
 public class Comment {
@@ -59,10 +59,5 @@ public class Comment {
                 + "text='" + text + '\''
                 + ", user=" + user
                 + '}';
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 }

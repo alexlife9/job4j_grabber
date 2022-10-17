@@ -12,21 +12,22 @@ import java.util.Scanner;
  * Удаляем все сразу.
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 17.10.2022
  */
 public class Menu {
-    public static final Integer ADD_POST = 1;
-    public static final Integer ADD_MANY_POST = 2;
-    public static final Integer SHOW_ALL_POSTS = 3;
-    public static final Integer DELETE_POST = 4;
-
+    /* Классы-обёртки неизменяемые, поэтому при каждой автоупаковке (за исключением значений из pool)
+    создается новый объект, что может привести к неразумному расходу памяти.
+    Поэтому меняем все поля Integer на int */
+    public static final int ADD_POST = 1;
+    public static final int ADD_MANY_POST = 2;
+    public static final int SHOW_ALL_POSTS = 3;
+    public static final int DELETE_POST = 4;
     public static final String SELECT = "Выберите меню";
     public static final String COUNT = "Выберите количество создаваемых постов";
     public static final String TEXT_OF_POST = "Введите текст";
     public static final String ID_FOR_DELETE = "Удаляем все посты";
     public static final String EXIT = "Конец работы";
-
     public static final String MENU = """
                 Введите 1 для создание поста.
                 Введите 2, чтобы создать определенное количество постов.
@@ -57,7 +58,8 @@ public class Menu {
                 String text = scanner.nextLine();
                 userGenerator.generate();
                 commentGenerator.generate();
-                postStore.add(new Post(text, CommentGenerator.getComments()));
+                /* меняем обращение к классу на обращение к переменной класса */
+                postStore.add(new Post(text, commentGenerator.getComments()));
             } else if (ADD_MANY_POST == userChoice) {
                 System.out.println(TEXT_OF_POST);
                 String text = scanner.nextLine();
@@ -67,7 +69,7 @@ public class Menu {
                     createPost(commentGenerator, userGenerator, postStore, text);
                 }
             } else if (SHOW_ALL_POSTS == userChoice) {
-                System.out.println(PostStore.getPosts());
+                System.out.println(postStore.getPosts());
             } else if (DELETE_POST == userChoice) {
                 System.out.println(ID_FOR_DELETE);
                 postStore.removeAll();
@@ -82,6 +84,7 @@ public class Menu {
                                    UserGenerator userGenerator, PostStore postStore, String text) {
         userGenerator.generate();
         commentGenerator.generate();
-        postStore.add(new Post(text, CommentGenerator.getComments()));
+        /* меняем обращение к классу на обращение к переменной класса */
+        postStore.add(new Post(text, commentGenerator.getComments()));
     }
 }

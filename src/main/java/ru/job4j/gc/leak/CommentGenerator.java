@@ -14,23 +14,19 @@ import java.util.Random;
  * а затем сгенерируем 50 комментариев из случайных фраз.
  *
  * @author Alex_life
- * @version 1.0
+ * @version 2.0
  * @since 17.10.2022
  */
 public class CommentGenerator implements Generate {
-
     public static final String PATH_PHRASES = "src/main/java/ru/job4j/gc/leak/files/phrases.txt";
-
     public static final String SEPARATOR = System.lineSeparator();
+    public static final int COUNT = 50;
 
-    private static List<Comment> comments = new ArrayList<>();
-
-    public static final Integer COUNT = 50;
-
-    private static List<String> phrases;
-
+    /* интенсивное использование статических переменных может приводить к утечке памяти.
+    В Java статические поля имеют срок службы, который обычно соответствует всему сроку службы работающего приложения*/
+    private List<Comment> comments = new ArrayList<>();
+    private List<String> phrases;
     private UserGenerator userGenerator;
-
     private Random random;
 
     public CommentGenerator(Random random, UserGenerator userGenerator) {
@@ -47,7 +43,7 @@ public class CommentGenerator implements Generate {
         }
     }
 
-    public static List<Comment> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
