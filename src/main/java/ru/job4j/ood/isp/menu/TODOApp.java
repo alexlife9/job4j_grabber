@@ -6,8 +6,8 @@ import java.util.Scanner;
  * Приложение для построения и вывода списка задач пользователя.
  *
  * @author Alex_life
- * @version 2.0
- * @since 15.10.2022
+ * @version 3.0
+ * @since 17.10.2022
  */
 public class TODOApp {
     private static final int ADD_ROOT_TODO = 1;
@@ -22,7 +22,7 @@ public class TODOApp {
     private static final String QUIT_MSG = "Работа завершена";
     private static final String LS = System.lineSeparator();
     private static final ActionDelegate ACTION_PRINTLN = System.out::println;
-    public static final String START_MENU = """
+    private static final String START_MENU = """
             Меню. Введите номер пункта:
             1. Добавить задание в корень списка
             2. Добавить подзадание
@@ -32,7 +32,7 @@ public class TODOApp {
 
     public static void main(String[] args) {
         Menu savesTodo = new SimpleMenu();
-        MenuPrinter menuPrinter = new Printer();
+        MenuPrinter menuPrinter = new ConsoleMenuPrinter();
         Scanner scanner = new Scanner(System.in);
         String parentName;
         String childName;
