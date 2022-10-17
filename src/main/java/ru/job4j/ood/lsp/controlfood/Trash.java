@@ -10,8 +10,8 @@ import static ru.job4j.ood.lsp.controlfood.Percent.expirationDatePercentage;
  * Хранилище продуктов
  *
  * @author Alex_life
- * @version 2.0
- * @since 30.09.2022
+ * @version 3.0
+ * @since 17.10.2022
  */
 public class Trash implements Store {
     private final List<Food> trashFoodList = new ArrayList<>();
@@ -29,5 +29,10 @@ public class Trash implements Store {
     @Override
     public List<Food> getFoods() {
         return List.copyOf(trashFoodList);
+    }
+
+    @Override
+    public void clear() {
+        trashFoodList.clear();
     }
 }

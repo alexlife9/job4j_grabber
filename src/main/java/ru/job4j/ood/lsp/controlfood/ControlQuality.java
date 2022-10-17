@@ -1,5 +1,6 @@
 package ru.job4j.ood.lsp.controlfood;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,8 +15,8 @@ import java.util.List;
  * 4. Если срок годности вышел, то отправить продукт в мусорку.
  *
  * @author Alex_life
- * @version 2.0
- * @since 30.09.2022
+ * @version 3.0
+ * @since 17.10.2022
  */
 public class ControlQuality {
     List<Store> storage;
@@ -36,5 +37,18 @@ public class ControlQuality {
                 break;
             }
         }
+    }
+
+    public void resort() {
+        List<Food> tempFood = new ArrayList<>();
+        for (Store stores : storage) {
+            List<Food> temp =  stores.getFoods();
+            tempFood.addAll(temp);
+            stores.clear();
+        }
+        for (Food food : tempFood) {
+            distribution(food);
+        }
+
     }
 }

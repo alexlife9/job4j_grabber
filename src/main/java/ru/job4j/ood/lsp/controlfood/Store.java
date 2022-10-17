@@ -1,7 +1,5 @@
 package ru.job4j.ood.lsp.controlfood;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,8 +11,8 @@ import java.util.List;
  * 3. возвращает список добавленных продуктов
  *
  * @author Alex_life
- * @version 2.0
- * @since 30.09.2022
+ * @version 3.0
+ * @since 17.10.2022
  */
 public interface Store {
 
@@ -23,4 +21,6 @@ public interface Store {
     }
 
     List<Food> getFoods();
+
+    void clear();
 }

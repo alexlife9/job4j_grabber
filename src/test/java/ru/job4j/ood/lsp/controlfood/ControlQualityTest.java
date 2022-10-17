@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.*;
  * Хранилище продуктов
  *
  * @author Alex_life
- * @version 4.0
- * @since 03.10.2022
+ * @version 5.0
+ * @since 17.10.2022
  */
 class ControlQualityTest {
     LocalDate expiryDate;
@@ -98,5 +98,22 @@ class ControlQualityTest {
         assertThat(milk.getPrice()).isEqualTo(100);
         assertThat(meat.getPrice()).isEqualTo(100);
         assertThat(meatD.getPrice()).isEqualTo(120);
+    }
+
+    @Test
+    public void whenResort() {
+        Food fish = new Fish("Fish", LocalDate.now().plusDays(30), LocalDate.now().minusDays(1), 100.0, 50);
+        Food milk = new Milk("Milk", LocalDate.now().plusDays(0), LocalDate.now().minusDays(30), 100.0, 50);
+        Food meat = new Meat("Meat", LocalDate.now().plusDays(30), LocalDate.now().minusDays(30), 100.0, 50);
+        controlQuality.distribution(fish);
+        controlQuality.distribution(milk);
+        controlQuality.distribution(meat);
+        controlQuality.resort();
+        assertThat(warehouse.getFoods().contains(fish)).isTrue();
+        assertThat(trash.getFoods().contains(milk)).isTrue();
+        assertThat(shop.getFoods().contains(meat)).isTrue();
+        assertThat(fish.getPrice()).isEqualTo(100);
+        assertThat(milk.getPrice()).isEqualTo(100);
+        assertThat(meat.getPrice()).isEqualTo(100);
     }
 }
