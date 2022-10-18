@@ -9,11 +9,11 @@ import java.util.Objects;
  * смотри User
  *
  * @author Alex_life
- * @version 2.0
- * @since 17.10.2022
+ * @version 3.0
+ * @since 18.10.2022
  */
 public class Post {
-    private Integer id;
+    private int id;
     private String text;
     private List<Comment> comments;
 

@@ -14,8 +14,8 @@ import java.util.Random;
  * а затем сгенерируем 50 комментариев из случайных фраз.
  *
  * @author Alex_life
- * @version 2.0
- * @since 17.10.2022
+ * @version 3.0
+ * @since 18.10.2022
  */
 public class CommentGenerator implements Generate {
     public static final String PATH_PHRASES = "src/main/java/ru/job4j/gc/leak/files/phrases.txt";
@@ -50,13 +50,11 @@ public class CommentGenerator implements Generate {
     @Override
     public void generate() {
         comments.clear();
-        List<Integer> ints = new ArrayList<>();
-        random.ints(0, phrases.size())
-                .distinct().limit(3).forEach(ints::add);
         for (int i = 0; i < COUNT; i++) {
-            String comment = phrases.get(ints.get(0)) + SEPARATOR
-                    + phrases.get(ints.get(1)) + SEPARATOR
-                    + phrases.get(ints.get(2));
+            String comment = String.format("%s%s%s%s%s",
+                    phrases.get(random.nextInt(phrases.size())), SEPARATOR,
+                    phrases.get(random.nextInt(phrases.size())), SEPARATOR,
+                    phrases.get(random.nextInt(phrases.size())));
             comments.add(new Comment(comment,
                     userGenerator.randomUser()));
         }

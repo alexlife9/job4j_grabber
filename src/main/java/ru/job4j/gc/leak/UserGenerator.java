@@ -15,8 +15,8 @@ import java.util.Random;
  * Таким образом каждый раз создаем 1000 пользователей.
  *
  * @author Alex_life
- * @version 2.0
- * @since 17.10.2022
+ * @version 3.0
+ * @since 18.10.2022
  */
 public class UserGenerator implements Generate {
     public static final String PATH_NAMES = "src/main/java/ru/job4j/gc/leak/files/names.txt";
@@ -39,10 +39,10 @@ public class UserGenerator implements Generate {
     public void generate() {
         users.clear();
         for (int i = 0; i < NEW_USERS; i++) {
-            users.add(new User(
-                    surnames.get(random.nextInt(surnames.size())) + SEPARATOR
-                            + names.get(random.nextInt(names.size())) + SEPARATOR
-                            + patrons.get(random.nextInt(patrons.size()))));
+            users.add(new User(String.format("%s%s%s%s%s",
+                    surnames.get(random.nextInt(surnames.size())), SEPARATOR,
+                            names.get(random.nextInt(names.size())), SEPARATOR,
+                            patrons.get(random.nextInt(patrons.size())))));
         }
     }
 
