@@ -51,7 +51,7 @@ public class WeakDemo {
      * Это гарантирует, что в интервалах получения сильной ссылки из безопасной GC не затрет объект.
      * Это касается не только локальных переменных, но и возвращаемых значений и аргументов.
      */
-    private static void example2() throws InterruptedException {
+private static void example2() throws InterruptedException {
         List<WeakReference<Object>> objects = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             objects.add(new WeakReference<Object>(new Object() {
@@ -77,7 +77,7 @@ public class WeakDemo {
      * Далее ссылка WearReference будет помещена в очередь ReferenceQueue
      * и мы можем, пока объект не удален физически, получить его из этой очереди.
      */
-    private static void example3() throws InterruptedException {
+private static void example3() throws InterruptedException {
         Object object = new Object() {
             @Override
             protected void finalize() throws Throwable {
@@ -96,5 +96,4 @@ public class WeakDemo {
         /* после удаления объект временно можно получить из ReferenceQueue: */
         System.out.println("from queue " + queue.poll());
     }
-
 }
