@@ -3,23 +3,23 @@ package ru.job4j.ood.isp.menu;
 import java.util.Scanner;
 
 /**
- * Приложение для построения и вывода списка задач пользователя.
+ * Приложение для добавления, построения и вывода списка задач пользователя.
  *
  * @author Alex_life
- * @version 4.0
- * @since 19.10.2022
+ * @version 5.0
+ * @since 27.10.2022
  */
 public class TODOApp {
     private static final int ADD_ROOT_TODO = 1;
     private static final int ADD_CHILD_TODO = 2;
     private static final int SHOW_TODOS = 3;
     private static final int QUIT = 4;
-    private static final String TASK_MSG = "Введите описание основного задания:";
-    private static final String TASK_NUMBER_MSG = "Введите номер задания для добавление в него подзадания:";
-    private static final String INNER_TASK_MSG = "Введите описание вложенного задания:";
+    private static final String TASK_MSG = "Введите основное задание:";
+    private static final String TASK_NUMBER_MSG = "Введите имя задания для добавление в него подзадания:";
+    private static final String INNER_TASK_MSG = "Введите вложенное задание:";
     private static final String CREATED_SAVE_MSG = "Задание создано и сохранено";
     private static final String CREATED_FAIL =
-            "Не удалось добавить элемент. Проверьте коррекность названия родительского элемента.";
+            "Не удалось добавить задание. Проверьте корректность названия родительского задания.";
     private static final String ALL_TODOS_MSG = "Список всех заданий:";
     private static final String QUIT_MSG = "Работа завершена";
     private static final String LS = System.lineSeparator();
@@ -48,6 +48,7 @@ public class TODOApp {
                 savesTodo.add(Menu.ROOT, parentName, ACTION_PRINTLN);
                 System.out.println(CREATED_SAVE_MSG);
                 System.out.println(LS);
+                continue;
             }
 
             if (ADD_CHILD_TODO == userInput) {
@@ -62,6 +63,7 @@ public class TODOApp {
                 }
                 System.out.println(LS);
                 System.out.println(CREATED_SAVE_MSG);
+                continue;
             }
 
             if (SHOW_TODOS == userInput) {
